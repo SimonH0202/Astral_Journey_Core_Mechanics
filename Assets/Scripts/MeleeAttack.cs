@@ -163,13 +163,13 @@ public class MeleeAttack : MonoBehaviour
 
     void HandleJumpDamage()
     {
-        if (isJumpAttacking && movementController.GetIsGrounded())
+        if (isJumpAttacking)
         {
             //Check for enemies in hit radius
             Collider[] hitEnemies = Physics.OverlapSphere(damagePoint.position, jumpDamageRadius, enemyLayers);
             foreach (Collider enemy in hitEnemies)
             {
-                if (!damagedEnemies.Contains(enemy.gameObject))
+                if (!damagedEnemies.Contains(enemy.gameObject) && movementController.GetIsGrounded())
                 {
                     //Damage enemy
                     damagedEnemies.Add(enemy.gameObject);
@@ -179,6 +179,8 @@ public class MeleeAttack : MonoBehaviour
                     //Increment jump attack index
                     jumpAttackIndex++;
                     if (jumpAttackIndex >= JumpAttacks.Count) jumpAttackIndex = 0;
+                    //Reset attack variables
+                    isJumpAttacking = false;
                 }
             }
         }

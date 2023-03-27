@@ -15,6 +15,8 @@ public class EnemyAI : MonoBehaviour
     //Enemy stats
     [SerializeField] private float health = 100f;
 
+    [SerializeField] private StatsBar healthBar;
+
     [Header("Enemy Attack Settings")]
     //Enemy attack settings
     
@@ -50,6 +52,9 @@ public class EnemyAI : MonoBehaviour
         attacking = false;
         currentPoint = 0;
 
+        //Set up health bar
+        healthBar.SetMaxStat(health);
+
         //Set up start destination
         agent.destination = patrolPoints[currentPoint].position;
 
@@ -61,7 +66,7 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
-        //Check if enemy is dead
+        if (health <= 0) Die();
         if (!dead)
         {
             PatrolAndAttack();
@@ -111,10 +116,7 @@ public class EnemyAI : MonoBehaviour
     public void TakeDamage(float damage)
     {
         health -= damage;
-        if (health <= 0)
-        {
-            Die();
-        }
+        healthBar.SetStat(health);
     }
 
     void Die()
@@ -130,6 +132,12 @@ public class EnemyAI : MonoBehaviour
         //Disable enemy
         dead = true;
         Destroy(GetComponent<Collider>());
+
+        //Disable navmesh agent movement
+        agent.SetDestination(transform.position);
+
+        //Disable health bar
+        healthBar.gameObject.SetActive(false);
 
         //Set dead animation
         animator.SetBool(isDeadHash, true);
