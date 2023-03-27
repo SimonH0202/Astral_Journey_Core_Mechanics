@@ -1939,7 +1939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffd2fc0a15a2c7243907d5d60347f999, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  throwForce: 40
+  throwForce: 20
   grenadePrefab: {fileID: 2069209867580707632, guid: 3bbf66339b7fb924abc9fa4724f8795b,
     type: 3}
 --- !u!1 &588843018
