@@ -7,9 +7,9 @@ public class EnemyAI : MonoBehaviour
 {
     
     //Editor Enemy Settings
-    [SerializeField] private GameObject[] points;
+    [SerializeField] private Transform[] patrolPoints;
     [SerializeField] public List<EnemyAI> fellowAI;
-    [SerializeField] private GameObject[] chaseSpots;
+    [SerializeField] private Transform[] chaseSpots;
 
     [Header("Enemy Stats")]
     //Enemy stats
@@ -23,6 +23,9 @@ public class EnemyAI : MonoBehaviour
     private bool patrolling;
     private bool attacking;
 
+    //Private enemy variables
+    private bool dead = false;
+
     //References
     private MovementController playerController;
     private NavMeshAgent agent;
@@ -32,6 +35,7 @@ public class EnemyAI : MonoBehaviour
     //Animation hashes
     int isWalkingHash;
     int isAttackingHash;
+    int isDeadHash;
 
     private void Start()
     {
@@ -47,17 +51,22 @@ public class EnemyAI : MonoBehaviour
         currentPoint = 0;
 
         //Set up start destination
-        agent.destination = points[currentPoint].transform.position;
+        agent.destination = patrolPoints[currentPoint].position;
 
         //Set up animation hashes
         isWalkingHash = Animator.StringToHash("isWalking");
         isAttackingHash = Animator.StringToHash("isAttacking");
+        isDeadHash = Animator.StringToHash("isDead");
     }
 
     private void Update()
     {
-        PatrolAndAttack();
-        HandleWalkAnimation();
+        //Check if enemy is dead
+        if (!dead)
+        {
+            PatrolAndAttack();
+            HandleWalkAnimation();
+        }
     }
 
     public void PatrolAndAttack()
@@ -67,16 +76,15 @@ public class EnemyAI : MonoBehaviour
              if(Vector3.Distance(this.transform.position, player.transform.position) <= 10f)
             {
                 FollowPlayer();
-                agent.speed = 7.5f;
             }
             //Player is out of sight
             if(Vector3.Distance(this.transform.position, player.transform.position) > 10f)
             {   
                 agent.speed = 5f;
-                agent.destination = points[currentPoint].transform.position;
+                agent.destination = patrolPoints[currentPoint].position;
             }
             //Go to next waypoint
-            if(Vector3.Distance(this.transform.position, points[currentPoint].transform.position) <= 5f)
+            if(Vector3.Distance(this.transform.position, patrolPoints[currentPoint].position) <= 5f)
             {
                 Iterate(); 
             }    
@@ -102,7 +110,6 @@ public class EnemyAI : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        Debug.Log("Enemy took " + damage + " damage");
         health -= damage;
         if (health <= 0)
         {
@@ -120,8 +127,17 @@ public class EnemyAI : MonoBehaviour
             fellowAI[i].fellowAI.Remove(this);
         }
 
-        //Destroy enemy
-        Destroy(gameObject);
+        //Disable enemy
+        dead = true;
+        Destroy(GetComponent<Collider>());
+
+        //Set dead animation
+        animator.SetBool(isDeadHash, true);
+        animator.SetBool(isWalkingHash, false);
+        animator.SetBool(isAttackingHash, false);
+
+        //Delete enemy after 10 seconds
+        Destroy(gameObject, 10f);
     }
 
     //Attack coroutine
@@ -162,7 +178,8 @@ public class EnemyAI : MonoBehaviour
         for(int i = 0; i < fellowAI.Count; i++)
         {
             fellowAI[i].SetPatrolling(false);
-            fellowAI[i].agent.destination = chaseSpots[k].transform.position;
+            fellowAI[i].agent.speed = 7.5f;
+            fellowAI[i].agent.destination = chaseSpots[k].position;
             k++;
             // out of bounds error handling, spare enemys share first spot
             if(k >= chaseSpots.Length)
@@ -184,10 +201,11 @@ public class EnemyAI : MonoBehaviour
         return false;
     }
 
-    //Iterate to next waypoint
+
     void Iterate()
     {
-        if(currentPoint < points.Length-1)
+        //Iterate to next waypoint
+        if(currentPoint < patrolPoints.Length-1)
         {
             currentPoint++;
         }
@@ -195,7 +213,7 @@ public class EnemyAI : MonoBehaviour
         {
             currentPoint = 0;
         }
-        agent.destination = points[currentPoint].transform.position;
+        agent.destination = patrolPoints[currentPoint].transform.position;
     }
     
     public bool GetPatrolling()
