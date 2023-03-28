@@ -19,11 +19,20 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Enemy Attack Settings")]
     //Enemy attack settings
-    
+    [SerializeField] private float attackDamage = 10f;
+
+    [SerializeField] private float weaponLength = 2f;
+
+    [SerializeField] private Transform weaponPoint;
+
+    [SerializeField] private LayerMask playerLayers;
+
     //Private patrolling variables
     private int currentPoint;
     private bool patrolling;
     private bool attacking;
+
+    private List<GameObject> damagedPlayers = new List<GameObject>();
 
     //Private enemy variables
     private bool dead = false;
@@ -109,6 +118,7 @@ public class EnemyAI : MonoBehaviour
                     agent.isStopped = true;
                     StartCoroutine(Attack());
                 }
+                HandleDamageRaycast();
             }
         }       
     }
@@ -162,6 +172,7 @@ public class EnemyAI : MonoBehaviour
         yield return new WaitForSeconds(Random.Range(0.5f, 1f));
         attacking = false;
         agent.isStopped = false;
+        damagedPlayers.Clear();
     }
 
     void HandleWalkAnimation()
@@ -193,6 +204,25 @@ public class EnemyAI : MonoBehaviour
             if(k >= chaseSpots.Length)
             {
                 k = 0;
+            }
+        }
+    }
+
+    void HandleDamageRaycast()
+    {
+        if (attacking)
+        {
+            RaycastHit hit;
+
+            //Check for enemies hit by raycast
+            if (Physics.Raycast(weaponPoint.position, -weaponPoint.transform.up, out hit, weaponLength, playerLayers))
+            {
+                if (!damagedPlayers.Contains(hit.transform.gameObject))
+                {
+                    //Damage enemy
+                    damagedPlayers.Add(hit.transform.gameObject);
+                    hit.transform.GetComponent<PlayerStatsSystem>().TakeDamage(attackDamage);
+                }
             }
         }
     }
@@ -232,5 +262,11 @@ public class EnemyAI : MonoBehaviour
     public void SetPatrolling(bool b)
     {
         patrolling = b;
-    }    
+    }  
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(weaponPoint.position, weaponPoint.position + weaponLength * -weaponPoint.transform.up);
+    }
 }
