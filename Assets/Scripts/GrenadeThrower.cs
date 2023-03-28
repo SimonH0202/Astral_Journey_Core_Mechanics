@@ -47,7 +47,9 @@ public class GrenadeThrower : MonoBehaviour
         else
         {
             aimVirtualCamera.gameObject.SetActive(false);
+            Destroy(grenade);
         }
+
     }
 
  

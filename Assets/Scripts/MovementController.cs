@@ -66,6 +66,7 @@ public class MovementController : MonoBehaviour
         playerInput.CharacterControls.Run.canceled += OnRunInput;
         playerInput.CharacterControls.Jump.started += OnJumpInput;
         playerInput.CharacterControls.Jump.canceled += OnJumpInput;
+        
 
         //Get Animation Hashes
         isWalkingHash = Animator.StringToHash("isWalking");
@@ -108,6 +109,7 @@ public class MovementController : MonoBehaviour
         //Check jump input
         if (!isMovementLocked) isJumpPressed = context.ReadValueAsButton();
     }
+    
 
     void SetupJumpVariables()
     {
@@ -171,7 +173,7 @@ public class MovementController : MonoBehaviour
     {
         //Enable movement and check for movement input
         isMovementLocked = false;
-        movementInput = playerInput.CharacterControls.Move.ReadValue<Vector2>();
+        //movementInput = playerInput.CharacterControls.Move.ReadValue<Vector2>();
         isMovementPressed = movementInput.x != 0 || movementInput.y != 0;
         HandleRotation();
     }
@@ -235,11 +237,13 @@ public class MovementController : MonoBehaviour
 
     void OnEnable()
     {
+        //Enable Input
         playerInput.CharacterControls.Enable();
     }
 
     void OnDisable()
     {
+        //Disable Input
         playerInput.CharacterControls.Disable();
     }
 }
