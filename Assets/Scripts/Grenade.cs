@@ -5,59 +5,57 @@ using UnityEngine;
 public class Grenade : MonoBehaviour
 {
 
-    public float delay = 3f;
     public float radius = 5f;
     public float force = 700f;
 
     public GameObject explosionEffect;
 
-    float countdown;
+    float grenadeDmg = 20f;
+    bool isCollided;
     bool hasExploded = false;
+
+    List<GameObject> damagedEnemies = new List<GameObject>();
+    public LayerMask enemyLayers;
 
     // Start is called before the first frame update
     void Start()
     {
-        countdown = delay;
+      
     }
 
     // Update is called once per frame
     void Update()
     {
-        countdown -= Time.deltaTime;
-        if(countdown <= 0f && !hasExploded)
+        if(isCollided && !hasExploded)
         {
-            Explode();
             hasExploded = true;
+            Explode();
         }
     }
 
     void Explode()
     {
         Instantiate(explosionEffect, transform.position, transform.rotation);
-
-        Collider[] collidersToDestroy = Physics.OverlapSphere(transform.position, radius);
-
-        foreach(Collider nearbyObject in collidersToDestroy)
-        {
-    /*        Destructible dest = nearbyObject.GetComponent<Destructible>();
-            if(dest != null)
-            {
-                dest.Destroy();
-            } */
-        }
    
-        Collider[] collidersToMove = Physics.OverlapSphere(transform.position, radius);
+        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, radius, enemyLayers);
 
-        foreach(Collider nearbyObject in collidersToMove)
+        foreach(Collider enemy in hitEnemies)
         {
-            Rigidbody rb = nearbyObject.GetComponent<Rigidbody>();
-            if(rb != null)
-            {
-                rb.AddExplosionForce(force, transform.position, radius);
-            }
-
+             if (!damagedEnemies.Contains(enemy.gameObject) && hasExploded)
+                {
+                    //Damage enemy
+                    damagedEnemies.Add(enemy.gameObject);
+                    enemy.GetComponent<EnemyAI>().TakeDamage(grenadeDmg);
+                    hasExploded = false;
+                }
         }
+    }
 
-        Destroy(gameObject);
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag != "Player")
+        {
+            isCollided = true;
+        }
     }
 }

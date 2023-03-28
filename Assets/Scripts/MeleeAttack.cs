@@ -47,8 +47,6 @@ public class MeleeAttack : MonoBehaviour
     public float multliplierThreshold1 = 2f;
     public float multliplierThreshold2 = 2.5f;
 
-
-
     //Animation hashes
     int isAttackingHash;
     int attackAnimSpeedHash;
