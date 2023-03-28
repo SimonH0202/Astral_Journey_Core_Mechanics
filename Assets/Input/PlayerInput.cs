@@ -71,6 +71,15 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Aim"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""36cdbe58-fd99-46b3-95c7-595280fa7691"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -216,6 +225,28 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""New action"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2f7b0d00-3aa5-45fe-8925-2d7b42450506"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""926a0d1c-f4bd-48ce-b1ca-954bc33f1edd"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -229,6 +260,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         m_CharacterControls_Attack1 = m_CharacterControls.FindAction("Attack1", throwIfNotFound: true);
         m_CharacterControls_Jump = m_CharacterControls.FindAction("Jump", throwIfNotFound: true);
         m_CharacterControls_Newaction = m_CharacterControls.FindAction("New action", throwIfNotFound: true);
+        m_CharacterControls_Aim = m_CharacterControls.FindAction("Aim", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -293,6 +325,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_CharacterControls_Attack1;
     private readonly InputAction m_CharacterControls_Jump;
     private readonly InputAction m_CharacterControls_Newaction;
+    private readonly InputAction m_CharacterControls_Aim;
     public struct CharacterControlsActions
     {
         private @PlayerInput m_Wrapper;
@@ -302,6 +335,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         public InputAction @Attack1 => m_Wrapper.m_CharacterControls_Attack1;
         public InputAction @Jump => m_Wrapper.m_CharacterControls_Jump;
         public InputAction @Newaction => m_Wrapper.m_CharacterControls_Newaction;
+        public InputAction @Aim => m_Wrapper.m_CharacterControls_Aim;
         public InputActionMap Get() { return m_Wrapper.m_CharacterControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -326,6 +360,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Newaction.started -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnNewaction;
                 @Newaction.performed -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnNewaction;
                 @Newaction.canceled -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnNewaction;
+                @Aim.started -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnAim;
+                @Aim.performed -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnAim;
+                @Aim.canceled -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnAim;
             }
             m_Wrapper.m_CharacterControlsActionsCallbackInterface = instance;
             if (instance != null)
@@ -345,6 +382,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Newaction.started += instance.OnNewaction;
                 @Newaction.performed += instance.OnNewaction;
                 @Newaction.canceled += instance.OnNewaction;
+                @Aim.started += instance.OnAim;
+                @Aim.performed += instance.OnAim;
+                @Aim.canceled += instance.OnAim;
             }
         }
     }
@@ -356,5 +396,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         void OnAttack1(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnNewaction(InputAction.CallbackContext context);
+        void OnAim(InputAction.CallbackContext context);
     }
 }
