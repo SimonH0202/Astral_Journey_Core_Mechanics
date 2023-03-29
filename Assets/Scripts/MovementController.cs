@@ -115,17 +115,17 @@ public class MovementController : MonoBehaviour
 
     private void HandleCameraRotation()
     {
-        //If there is an input and camera position is not fixed
+        //Handle Camera Rotation
         if (playerInput.look.sqrMagnitude >= 0.01f && !lockCameraPosition)
         {
-            //Don't multiply mouse input by Time.deltaTime;
+            //Calculate our rotation multiplier based on if we are using a mouse or controller
             float deltaTimeMultiplier = isCurrentDeviceMouse ? 1f : Time.deltaTime;
 
             cinemachineTargetYaw += playerInput.look.x * deltaTimeMultiplier;
             cinemachineTargetPitch += playerInput.look.y * deltaTimeMultiplier;
         }
 
-        //Clamp our rotations so our values are limited 360 degrees
+        //Clamp rotations to limit values tp 360 degrees
         cinemachineTargetYaw = ClampAngle(cinemachineTargetYaw, float.MinValue, float.MaxValue);
         cinemachineTargetPitch = ClampAngle(cinemachineTargetPitch, bottomClamp, topClamp);
 
@@ -160,7 +160,7 @@ public class MovementController : MonoBehaviour
 
     void HandleDodge()
     {
-        if (playerInput.dodge && !isJumping && characterController.isGrounded && !isDodging)
+        if (playerInput.dodge && !isJumping && !isDodging && !isMovementLocked)
         {
             isDodging = true;
             StartCoroutine(Dodge());
