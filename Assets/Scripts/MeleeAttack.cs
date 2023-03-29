@@ -6,12 +6,11 @@ using UnityEngine.InputSystem;
 public class MeleeAttack : MonoBehaviour
 {
     //References
-    PlayerInput playerInput;
+    PlayerInputs playerInput;
     Animator animator;
     MovementController movementController;
 
     //Private Attack variables
-    bool isAttackPressed = false;
     bool isAttacking = false;
     bool isJumpAttacking = false;
     int attackIndex = 0;
@@ -55,15 +54,10 @@ public class MeleeAttack : MonoBehaviour
     void Awake()
     {
         //Get references
-        playerInput = new PlayerInput();
+        playerInput = GetComponent<PlayerInputs>();
         animator = GetComponent<Animator>();
         movementController = GetComponent<MovementController>();
         damagePoint = transform.Find("DamagePoint");
-
-        //Set up input actions
-        playerInput.CharacterControls.Attack1.started += OnAttackInput;
-        playerInput.CharacterControls.Attack1.canceled += OnAttackInput;
-        playerInput.CharacterControls.Attack1.performed += OnAttackInput;
 
         //Get animation hashes
         isAttackingHash = Animator.StringToHash("isAttacking");
@@ -79,14 +73,16 @@ public class MeleeAttack : MonoBehaviour
         animator.SetFloat(jumpAttackAnimSpeedHash, jumpAttackAnimSpeed);
     }
 
+    /*
     void OnAttackInput(InputAction.CallbackContext context)
     {
         isAttackPressed = context.ReadValueAsButton();
     }
+    */
 
     void HandleAttack()
     {
-        if (isAttackPressed && !movementController.GetIsJumping() && !isAttacking && !isJumpAttacking)
+        if (playerInput.attack && !movementController.GetIsJumping() && !isAttacking && !isJumpAttacking)
         {
             //Start attack, set runtime animator controller to attack animation
             isAttacking = true;
@@ -100,7 +96,7 @@ public class MeleeAttack : MonoBehaviour
 
     void HandleJumpAttack()
     {
-        if (isAttackPressed && movementController.GetIsJumping() && !isAttacking && !isJumpAttacking)
+        if (playerInput.attack && movementController.GetIsJumping() && !isAttacking && !isJumpAttacking)
         {
             //Calculate jump attack damage multiplier
             distance = Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f, groundLayers) ? hit.distance : 0f;           
@@ -210,16 +206,6 @@ public class MeleeAttack : MonoBehaviour
     {
         HandleAttack();
         HandleJumpAttack();
-    }
-
-    void OnEnable()
-    {
-        playerInput.Enable();
-    }
-
-    void OnDisable()
-    {
-        playerInput.Disable();
     }
 
     void OnDrawGizmos()

@@ -42,22 +42,13 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "New action",
-                    "type": "Button",
-                    "id": "6262dbce-a923-4a2b-980c-a1b36049e79c",
-                    "expectedControlType": "Button",
+                    "name": "Look",
+                    "type": "Value",
+                    "id": "8121602e-a942-4998-80c0-e422388fc563",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Aim",
-                    "type": "PassThrough",
-                    "id": "36cdbe58-fd99-46b3-95c7-595280fa7691",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -195,34 +186,23 @@
                 },
                 {
                     "name": "",
-                    "id": "f9a6ca9b-8e12-4285-a23d-1876eb8e46cc",
-                    "path": "",
+                    "id": "f70e593a-0602-4bc9-9100-3a9947ef9d32",
+                    "path": "<Pointer>/delta",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "InvertVector2(invertX=false),ScaleVector2(x=15,y=15)",
                     "groups": "",
-                    "action": "New action",
+                    "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "2f7b0d00-3aa5-45fe-8925-2d7b42450506",
-                    "path": "<Keyboard>/g",
+                    "id": "4cf74249-0d6c-49a8-afca-03143dcf6d8c",
+                    "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "InvertVector2(invertX=false),StickDeadzone,ScaleVector2(x=300,y=300)",
                     "groups": "",
-                    "action": "Aim",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "926a0d1c-f4bd-48ce-b1ca-954bc33f1edd",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Aim",
+                    "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
