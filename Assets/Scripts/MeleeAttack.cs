@@ -108,7 +108,7 @@ public class MeleeAttack : MonoBehaviour
             isJumpAttacking = true;
             animator.runtimeAnimatorController = JumpAttacks[jumpAttackIndex].animatorOverride;
             //Start jump attack coroutine
-            StartCoroutine(Attack(JumpAttacks, jumpAttackIndex));
+            StartCoroutine(Attack(JumpAttacks, jumpAttackIndex, true));
         }
         HandleJumpDamage();
     }
@@ -181,14 +181,24 @@ public class MeleeAttack : MonoBehaviour
     }
 
     //Attack coroutine
-    IEnumerator Attack(List<AttackSO> attackType, int attackIndex)
+    IEnumerator Attack(List<AttackSO> attackType, int attackIndex, bool isJumpAttack = false)
     {
         //Disable movement and play attack animation
         movementController.DisableMovement();
         animator.SetBool(isAttackingHash, true);
 
-        //Wait for animation to finish
-        yield return new WaitForSeconds(attackType[attackIndex].attackSpeed);
+        //Wait for attack animation to finish
+        if (!isJumpAttack) yield return new WaitForSeconds(attackType[attackIndex].attackSpeed);
+        else
+        {
+            //Wait until player is grounded
+            while (!movementController.GetIsGrounded())
+            {
+                yield return null;
+            }
+            //Jump attack delay
+            yield return new WaitForSeconds(attackType[attackIndex].attackSpeed);
+        }
         animator.SetBool(isAttackingHash, false);
 
         //Wait for a bit and re-enable movement
