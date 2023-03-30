@@ -22,6 +22,7 @@ public class Grenade : MonoBehaviour
     {
         if(isCollided && !hasExploded)
         {
+            Destroy(gameObject);
             hasExploded = true;
             Explode();
         }

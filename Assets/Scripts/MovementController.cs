@@ -37,6 +37,9 @@ public class MovementController : MonoBehaviour
     private bool isCurrentDeviceMouse;
 
 
+    private bool rotateOnMove = true;
+
+
     [Header("Jump Settings")]
     //Public Jump variables
     public float maxJumpHeight = 2f;
@@ -132,7 +135,8 @@ public class MovementController : MonoBehaviour
         //Cinemachine will follow this target
         cinemachineCameraTarget.transform.rotation = Quaternion.Euler(cinemachineTargetPitch + cameraAngleOverride,
         cinemachineTargetYaw, 0.0f);
-        }
+        
+    }
 
     void HandleRun()
     {
@@ -182,8 +186,10 @@ public class MovementController : MonoBehaviour
         if (playerInput.move.magnitude >= 0.1f && !isMovementLocked) {
             //Calculate and set rotation with camera and movement
             Quaternion targetRotation = Quaternion.Euler(0, Mathf.Atan2(movement.x, movement.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y, 0);
+            if(rotateOnMove)
+            {
             transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationFactorPerFrame * Time.deltaTime);
-
+            }
             //Set movement direction to where the player is facing
             moveDirection.x = transform.forward.x;
             moveDirection.z = transform.forward.z;
@@ -231,6 +237,11 @@ public class MovementController : MonoBehaviour
         if (lfAngle < -360f) lfAngle += 360f;
         if (lfAngle > 360f) lfAngle -= 360f;
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
+    }
+
+    public void SetRotateOnMove(bool newRotateOnMove)
+    {
+        rotateOnMove = newRotateOnMove;
     }
 
     void HandleGravity()
@@ -306,6 +317,7 @@ public class MovementController : MonoBehaviour
         HandleAnimation();
         HandleGravity();
         HandleJump();
+
     }
 
     void LateUpdate()

@@ -9,6 +9,8 @@ public class PlayerInputs : MonoBehaviour
 	public bool attack;
 	public bool sprint;
 	public bool dodge;
+	public bool grenadeAim;
+	public bool grenadeShoot;
 
 	[Header("Movement Settings")]
 	public bool analogMovement;
@@ -42,6 +44,15 @@ public class PlayerInputs : MonoBehaviour
 	{
 		DodgeInput(value.isPressed);
 	}
+	public void OnGrenadeAim(InputValue value)
+	{
+		GrenadeAimInput(value.isPressed);
+	}
+	public void OnGrenadeShoot(InputValue value)
+	{
+		GrenadeShootInput(value.isPressed);
+	}
+
 
 	//Events to bools
 	public void MoveInput(Vector2 newMoveDirection)
@@ -68,6 +79,15 @@ public class PlayerInputs : MonoBehaviour
 	{
 		dodge = newDodgeState;
 	}
+	public void GrenadeAimInput(bool newGrenadeAimState)
+	{
+		grenadeAim = newGrenadeAimState;
+	}
+	public void GrenadeShootInput(bool newGrenadeShootState)
+	{
+		grenadeShoot = newGrenadeShootState;
+	}
+
 
 	private void OnApplicationFocus(bool hasFocus)
 	{
