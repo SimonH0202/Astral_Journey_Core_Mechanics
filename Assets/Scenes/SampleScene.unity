@@ -1193,7 +1193,7 @@ MonoBehaviour:
   runSpeed: 8
   rotationFactorPerFrame: 15
   dodgeDistance: 8
-  dodgeTimer: 0.6
+  dodgeTimer: 0.5
   gravity: -9.81
 --- !u!143 &553964142
 CharacterController:
@@ -1213,6 +1213,38 @@ CharacterController:
   m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.85, z: 0}
+--- !u!114 &553964146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8296172668470553940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5993fe6e67ad3d42b720273d80ee513, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Attacks:
+  - {fileID: 11400000, guid: 91316e3dfb25c064e8b3abe3ccc0deb8, type: 2}
+  - {fileID: 11400000, guid: 91316e3dfb25c064e8b3abe3ccc0deb8, type: 2}
+  - {fileID: 11400000, guid: 87cb6e5117f92a24ea8c44a5859d8aab, type: 2}
+  JumpAttacks:
+  - {fileID: 11400000, guid: 45f75e81a31f9f34d9db1f7d273c0902, type: 2}
+  attackAnimSpeed: 1.5
+  jumpAttackAnimSpeed: 2
+  damageRadius: 1
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  weaponLength: 1.3
+  weaponPoint: {fileID: 280738537}
+  jumpDamageRadius: 1.5
+  groundLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  multliplierThreshold1: 2
+  multliplierThreshold2: 2.5
 --- !u!114 &553964149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11335,7 +11367,7 @@ GameObject:
   - component: {fileID: 8296172668470553943}
   - component: {fileID: 553964142}
   - component: {fileID: 553964141}
-  - component: {fileID: 8296172668470553944}
+  - component: {fileID: 553964146}
   - component: {fileID: 553964149}
   - component: {fileID: 8296172668470553944}
   m_Layer: 7
@@ -11394,13 +11426,8 @@ MonoBehaviour:
   attack: 0
   sprint: 0
   dodge: 0
-<<<<<<< Updated upstream
   grenadeAim: 0
   grenadeShoot: 0
-=======
-  grenadeState: 0
-  meleeState: 0
->>>>>>> Stashed changes
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -11413,7 +11440,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8296172668470553940}
   m_Enabled: 1
   m_EditorHideFlags: 0
-<<<<<<< Updated upstream
   m_Script: {fileID: 11500000, guid: ffd2fc0a15a2c7243907d5d60347f999, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -11427,31 +11453,6 @@ MonoBehaviour:
   LinePoints: 25
   TimeBetweenPoints: 0.1
   debugTransform: {fileID: 1770529691}
-=======
-  m_Script: {fileID: 11500000, guid: 215f4275619c37145b49a08d7e25be7b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Attacks:
-  - {fileID: 11400000, guid: 91316e3dfb25c064e8b3abe3ccc0deb8, type: 2}
-  - {fileID: 11400000, guid: 91316e3dfb25c064e8b3abe3ccc0deb8, type: 2}
-  - {fileID: 11400000, guid: 87cb6e5117f92a24ea8c44a5859d8aab, type: 2}
-  JumpAttacks:
-  - {fileID: 11400000, guid: 45f75e81a31f9f34d9db1f7d273c0902, type: 2}
-  attackAnimSpeed: 1.5
-  jumpAttackAnimSpeed: 2
-  damageRadius: 1
-  enemyLayers:
-    serializedVersion: 2
-    m_Bits: 8
-  weaponLength: 1.3
-  weaponPoint: {fileID: 280738537}
-  jumpDamageRadius: 1.5
-  groundLayers:
-    serializedVersion: 2
-    m_Bits: 64
-  multliplierThreshold1: 2
-  multliplierThreshold2: 2.5
->>>>>>> Stashed changes
 --- !u!1 &8389181126522004751
 GameObject:
   m_ObjectHideFlags: 0
