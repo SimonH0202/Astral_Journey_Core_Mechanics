@@ -54,7 +54,34 @@
                     "name": "Dodge",
                     "type": "PassThrough",
                     "id": "f77fa25e-71a7-41ba-9118-ec8f9265c415",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "GrenadeState",
+                    "type": "Button",
+                    "id": "f24fc2dd-71e4-4c61-b97f-3726628d2acf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MeleeState",
+                    "type": "Button",
+                    "id": "b09ca295-f4f7-45bc-af3f-0c5515f43a41",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ShooterState",
+                    "type": "Button",
+                    "id": "301968da-781f-4ca1-b300-4d4a7a0b5d46",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -280,7 +307,7 @@
                 {
                     "name": "",
                     "id": "46a1d285-6509-4875-8ff5-2416c231a108",
-                    "path": "<Keyboard>/leftCtrl",
+                    "path": "<Keyboard>/leftAlt",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
@@ -301,6 +328,7 @@
                 },
                 {
                     "name": "",
+<<<<<<< Updated upstream
                     "id": "c48ee566-61a1-4b85-8866-ac6b1b6f7f58",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
@@ -313,11 +341,73 @@
                 {
                     "name": "",
                     "id": "9eb4d943-b25d-4b9b-90dd-7ff94d8f989c",
+=======
+                    "id": "fa173513-3910-4045-8a42-525fbfe4c095",
+>>>>>>> Stashed changes
                     "path": "<Keyboard>/g",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
+<<<<<<< Updated upstream
                     "action": "GrenadeShoot",
+=======
+                    "action": "GrenadeState",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "82c90fde-a1c6-42ba-9c4b-b907eeb3053d",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "GrenadeState",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "df91b369-d5d2-47c4-b648-7d58145b70e3",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "MeleeState",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "31d8e379-b7d8-480e-949a-53922f052118",
+                    "path": "<Gamepad>/dpad/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "MeleeState",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fea4f8df-0f68-4ef0-a6ba-cb0839f736ff",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ShooterState",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d1d81bd2-42c0-4e67-aca2-66e6f71bd037",
+                    "path": "<Gamepad>/dpad/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ShooterState",
+>>>>>>> Stashed changes
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
