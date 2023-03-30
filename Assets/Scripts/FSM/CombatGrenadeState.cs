@@ -13,4 +13,8 @@ public class CombatGrenadeState : CombatBaseState
     public override void UpdateState(CombatStateManager manager)
     {
     }
+
+    public override void ExitState(CombatStateManager manager)
+    {
+    }
 }

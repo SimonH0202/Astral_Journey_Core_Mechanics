@@ -17,7 +17,6 @@ public class CombatMeleeState : CombatBaseState
 
     //Private Damage variables
     List<GameObject> damagedEnemies = new List<GameObject>();
-    Transform damagePoint;
     float jumpAttackDamageMultiplier = 1f;
     float distance;
 
@@ -31,13 +30,13 @@ public class CombatMeleeState : CombatBaseState
         //Log state change
         Debug.Log("Entered Melee State");
 
+        //Activate weapon
+        manager.meleeWeapon.SetActive(true);
+
         //Get references
         movementController = manager.GetComponent<MovementController>();
         animator = manager.GetComponent<Animator>();
         playerInput = manager.GetComponent<PlayerInputs>();
-
-        //Get damage point
-        damagePoint = manager.transform.Find("DamagePoint");
 
         //Get animation hashes
         isAttackingHash = Animator.StringToHash("isAttacking");
@@ -53,6 +52,12 @@ public class CombatMeleeState : CombatBaseState
     {
         HandleAttack(manager);
         HandleJumpAttack(manager);
+    }
+
+    public override void ExitState(CombatStateManager manager)
+    {
+        //Deactivate weapon
+        manager.meleeWeapon.SetActive(false);
     }
 
     void HandleAttack(CombatStateManager manager)
@@ -93,7 +98,7 @@ public class CombatMeleeState : CombatBaseState
     {
         if (isAttacking)
         {
-            Collider[] hitEnemies = Physics.OverlapSphere(damagePoint.position, manager.damageRadius, manager.enemyLayers);
+            Collider[] hitEnemies = Physics.OverlapSphere(manager.damagePoint.position, manager.damageRadius, manager.enemyLayers);
             foreach (Collider enemy in hitEnemies)
             {
                 if (!damagedEnemies.Contains(enemy.gameObject) && !movementController.GetIsJumping())
@@ -135,7 +140,7 @@ public class CombatMeleeState : CombatBaseState
         if (isJumpAttacking)
         {
             //Check for enemies in hit radius
-            Collider[] hitEnemies = Physics.OverlapSphere(damagePoint.position, manager.jumpDamageRadius, manager.enemyLayers);
+            Collider[] hitEnemies = Physics.OverlapSphere(manager.damagePoint.position, manager.jumpDamageRadius, manager.enemyLayers);
             foreach (Collider enemy in hitEnemies)
             {
                 if (!damagedEnemies.Contains(enemy.gameObject) && movementController.GetIsGrounded())
@@ -185,5 +190,4 @@ public class CombatMeleeState : CombatBaseState
         isJumpAttacking = false;
         damagedEnemies.Clear();
     }
-
 }

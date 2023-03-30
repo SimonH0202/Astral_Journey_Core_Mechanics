@@ -1485,6 +1485,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &638796683 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3243958488727707932, guid: 87d2b1ecfb26a3349af12d1ba83f0883,
+    type: 3}
+  m_PrefabInstance: {fileID: 60669850}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &649359404
 GameObject:
   m_ObjectHideFlags: 0
@@ -11412,6 +11418,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 215f4275619c37145b49a08d7e25be7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  meleeWeapon: {fileID: 638796683}
   Attacks:
   - {fileID: 11400000, guid: 91316e3dfb25c064e8b3abe3ccc0deb8, type: 2}
   - {fileID: 11400000, guid: 91316e3dfb25c064e8b3abe3ccc0deb8, type: 2}
@@ -11426,6 +11433,7 @@ MonoBehaviour:
     m_Bits: 8
   weaponLength: 1.3
   weaponPoint: {fileID: 280738537}
+  damagePoint: {fileID: 1231720339}
   jumpDamageRadius: 1.5
   groundLayers:
     serializedVersion: 2

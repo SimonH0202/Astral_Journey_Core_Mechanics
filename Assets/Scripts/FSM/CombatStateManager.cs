@@ -10,8 +10,9 @@ public class CombatStateManager : MonoBehaviour
     public CombatGrenadeState grenadeState = new CombatGrenadeState();
     public CombatShooterState shooterState = new CombatShooterState();
 
-    //Melee State variables
     [Header("Melee State")]
+    //Melee State variables
+    public GameObject meleeWeapon;
 
     //References
     PlayerInputs playerInput;
@@ -33,6 +34,7 @@ public class CombatStateManager : MonoBehaviour
     public LayerMask enemyLayers;
     public float weaponLength;
     public Transform weaponPoint;
+    public Transform damagePoint;
 
     [Header("Jump Damage Settings")]
     //Public Jump Damage variables
@@ -49,6 +51,10 @@ public class CombatStateManager : MonoBehaviour
         animator = GetComponent<Animator>();
         movementController = GetComponent<MovementController>();
 
+        //Get damage point
+        damagePoint = transform.Find("DamagePoint");
+
+        //Set initial state
         currentState = meleeState;
         currentState.EnterState(this);
     }
@@ -82,10 +88,18 @@ public class CombatStateManager : MonoBehaviour
 
     public void SwitchState(CombatBaseState newState)
     {
+        currentState.ExitState(this);
         currentState = newState;
         currentState.EnterState(this);
     }
 
-    //Getters
-
+    void OnDrawGizmos()
+    {
+        if (damagePoint == null) damagePoint = transform.Find("DamagePoint");
+        Gizmos.DrawWireSphere(damagePoint.position, damageRadius);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(damagePoint.position, jumpDamageRadius);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(weaponPoint.position, weaponPoint.position + weaponLength * -weaponPoint.transform.up);
+    }
 }
