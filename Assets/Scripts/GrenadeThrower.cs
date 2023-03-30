@@ -74,7 +74,7 @@ public class GrenadeThrower : MonoBehaviour
 
             DrawProjection();
 
-            if (playerInput.grenadeShoot)
+            if (playerInput.attack)
                 {   
                     grenade = Instantiate(grenadePrefab, ReleasePosition.position, transform.rotation);
                     grenade.transform.parent = player;
@@ -82,7 +82,7 @@ public class GrenadeThrower : MonoBehaviour
                     grenadeRb.velocity = throwForce * Camera.main.transform.forward;
                     grenade.transform.parent = null;
                     grenade = null;
-                    playerInput.grenadeShoot = false;
+                    playerInput.attack = false;
                     Destroy(grenade);
                 } 
 

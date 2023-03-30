@@ -9,15 +9,11 @@ public class PlayerInputs : MonoBehaviour
 	public bool attack;
 	public bool sprint;
 	public bool dodge;
-<<<<<<< Updated upstream
 	public bool grenadeAim;
-	public bool grenadeShoot;
-=======
 	public bool grenadeState;
 	public bool meleeState;
 	public bool shooterState;
 
->>>>>>> Stashed changes
 
 	[Header("Movement Settings")]
 	public bool analogMovement;
@@ -51,17 +47,10 @@ public class PlayerInputs : MonoBehaviour
 	{
 		DodgeInput(value.isPressed);
 	}
-<<<<<<< Updated upstream
 	public void OnGrenadeAim(InputValue value)
 	{
 		GrenadeAimInput(value.isPressed);
 	}
-	public void OnGrenadeShoot(InputValue value)
-	{
-		GrenadeShootInput(value.isPressed);
-	}
-
-=======
 	public void OnGrenadeState(InputValue value)
 	{
 		GrenadeStateInput(value.isPressed);
@@ -74,7 +63,6 @@ public class PlayerInputs : MonoBehaviour
 	{
 		ShooterStateInput(value.isPressed);
 	}
->>>>>>> Stashed changes
 
 	//Events to bools
 	public void MoveInput(Vector2 newMoveDirection)
@@ -101,17 +89,10 @@ public class PlayerInputs : MonoBehaviour
 	{
 		dodge = newDodgeState;
 	}
-<<<<<<< Updated upstream
 	public void GrenadeAimInput(bool newGrenadeAimState)
 	{
 		grenadeAim = newGrenadeAimState;
 	}
-	public void GrenadeShootInput(bool newGrenadeShootState)
-	{
-		grenadeShoot = newGrenadeShootState;
-	}
-
-=======
 	public void GrenadeStateInput(bool newGrenadeState)
 	{
 		grenadeState = newGrenadeState;
@@ -124,7 +105,6 @@ public class PlayerInputs : MonoBehaviour
 	{
 		shooterState = newShooterState;
 	}
->>>>>>> Stashed changes
 
 	private void OnApplicationFocus(bool hasFocus)
 	{

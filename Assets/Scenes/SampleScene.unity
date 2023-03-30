@@ -11337,7 +11337,6 @@ GameObject:
   - component: {fileID: 553964141}
   - component: {fileID: 8296172668470553944}
   - component: {fileID: 553964149}
-  - component: {fileID: 8296172668470553944}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -11394,13 +11393,10 @@ MonoBehaviour:
   attack: 0
   sprint: 0
   dodge: 0
-<<<<<<< Updated upstream
   grenadeAim: 0
-  grenadeShoot: 0
-=======
   grenadeState: 0
   meleeState: 0
->>>>>>> Stashed changes
+  shooterState: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -11413,21 +11409,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8296172668470553940}
   m_Enabled: 1
   m_EditorHideFlags: 0
-<<<<<<< Updated upstream
-  m_Script: {fileID: 11500000, guid: ffd2fc0a15a2c7243907d5d60347f999, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  throwForce: 40
-  grenadePrefab: {fileID: 2069209867580707632, guid: 3bbf66339b7fb924abc9fa4724f8795b,
-    type: 3}
-  player: {fileID: 5006512735533080391}
-  aimVirtualCamera: {fileID: 649359405}
-  ReleasePosition: {fileID: 579390674}
-  LineRenderer: {fileID: 579390675}
-  LinePoints: 25
-  TimeBetweenPoints: 0.1
-  debugTransform: {fileID: 1770529691}
-=======
   m_Script: {fileID: 11500000, guid: 215f4275619c37145b49a08d7e25be7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -11451,7 +11432,6 @@ MonoBehaviour:
     m_Bits: 64
   multliplierThreshold1: 2
   multliplierThreshold2: 2.5
->>>>>>> Stashed changes
 --- !u!1 &8389181126522004751
 GameObject:
   m_ObjectHideFlags: 0

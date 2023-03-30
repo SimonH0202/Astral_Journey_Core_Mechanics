@@ -60,16 +60,22 @@ public class CombatStateManager : MonoBehaviour
         {
             SwitchState(meleeState);
             playerInput.meleeState = false;
+            playerInput.grenadeState = false;
+            playerInput.shooterState = false;
         }
         else if (playerInput.grenadeState && currentState != grenadeState)
         {
             SwitchState(grenadeState);
             playerInput.grenadeState = false;
+            playerInput.meleeState = false;
+            playerInput.shooterState = false;
         }
         else if (playerInput.shooterState && currentState != shooterState)
         {
             SwitchState(shooterState);
             playerInput.shooterState = false;
+            playerInput.meleeState = false;
+            playerInput.grenadeState = false;
         }
         currentState.UpdateState(this);
     }

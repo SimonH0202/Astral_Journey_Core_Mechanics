@@ -94,15 +94,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "GrenadeShoot",
-                    "type": "Button",
-                    "id": "915ca330-0dbb-4b1f-b62e-3b62f1c1f50e",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -328,7 +319,6 @@
                 },
                 {
                     "name": "",
-<<<<<<< Updated upstream
                     "id": "c48ee566-61a1-4b85-8866-ac6b1b6f7f58",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
@@ -340,17 +330,11 @@
                 },
                 {
                     "name": "",
-                    "id": "9eb4d943-b25d-4b9b-90dd-7ff94d8f989c",
-=======
-                    "id": "fa173513-3910-4045-8a42-525fbfe4c095",
->>>>>>> Stashed changes
+                    "id": "44de9572-db79-4c81-96cb-ce1abc462406",
                     "path": "<Keyboard>/g",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-<<<<<<< Updated upstream
-                    "action": "GrenadeShoot",
-=======
                     "action": "GrenadeState",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -407,7 +391,6 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "ShooterState",
->>>>>>> Stashed changes
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
