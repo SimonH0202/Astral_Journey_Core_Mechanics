@@ -9,7 +9,11 @@ public class PlayerInputs : MonoBehaviour
 	public bool attack;
 	public bool sprint;
 	public bool dodge;
+
+	[Header("Grenade State Values")]
 	public bool grenadeAim;
+
+	[Header("Character State Values")]
 	public bool grenadeState;
 	public bool meleeState;
 	public bool shooterState;

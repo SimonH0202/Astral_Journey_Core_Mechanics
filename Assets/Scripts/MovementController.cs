@@ -19,6 +19,7 @@ public class MovementController : MonoBehaviour
     Vector3 movement;
     bool isMovementPressed;
     bool isMovementLocked = false;
+    bool rotateOnMove = true;
     float turnSmoothVelocity;
     float targetSpeed;
 
@@ -35,10 +36,6 @@ public class MovementController : MonoBehaviour
     private float cinemachineTargetYaw;
     private float cinemachineTargetPitch;
     private bool isCurrentDeviceMouse;
-
-
-    private bool rotateOnMove = true;
-
 
     [Header("Jump Settings")]
     //Public Jump variables
@@ -100,9 +97,6 @@ public class MovementController : MonoBehaviour
 
         //Set initial cinemachine values
         cinemachineTargetYaw = cinemachineCameraTarget.transform.rotation.eulerAngles.y;
-
-        //Lock cursor
-        Cursor.lockState = CursorLockMode.Locked;
 
         //Set initial values
         targetSpeed = movementSpeed;
@@ -193,9 +187,6 @@ public class MovementController : MonoBehaviour
             //Set movement direction to where the player is facing
             moveDirection.x = transform.forward.x;
             moveDirection.z = transform.forward.z;
-
-            //Move CharacterController
-            characterController.Move(new Vector3(moveDirection.x * targetSpeed, moveDirection.y, moveDirection.z * targetSpeed) * Time.deltaTime);
         } else {
             //Set movement direction to 0 if no movement input
             moveDirection.x = 0;
@@ -315,9 +306,12 @@ public class MovementController : MonoBehaviour
         HandleRun();
         HandleDodge();
         HandleAnimation();
+        
+        //Move CharacterController
+        characterController.Move(new Vector3(moveDirection.x * targetSpeed, moveDirection.y, moveDirection.z * targetSpeed) * Time.deltaTime);
+
         HandleGravity();
         HandleJump();
-
     }
 
     void LateUpdate()

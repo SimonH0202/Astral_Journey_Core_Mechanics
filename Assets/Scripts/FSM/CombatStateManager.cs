@@ -1,30 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class CombatStateManager : MonoBehaviour
 {
+    //Public State variables
     public CombatBaseState currentState;
-
     public CombatMeleeState meleeState = new CombatMeleeState();
     public CombatGrenadeState grenadeState = new CombatGrenadeState();
     public CombatShooterState shooterState = new CombatShooterState();
 
-    [Header("Melee State")]
-    //Melee State variables
-    public GameObject meleeWeapon;
-
     //References
     PlayerInputs playerInput;
-    Animator animator;
-    MovementController movementController;
+
+    [Header("Melee State")]
+    [Space(10)]
+    //Melee State variables
+    public GameObject meleeWeapon;
 
     //Public Animator Override Controllers
     public List<AttackSO> Attacks;
     public List<AttackSO> JumpAttacks;
 
     [Header("Attack Animation Settings")]
-    //Public Attack Animation variables
+    //Drop down menu for attack animations
+
     public float attackAnimSpeed = 1.5f;
     public float jumpAttackAnimSpeed = 2f;
 
@@ -43,13 +44,28 @@ public class CombatStateManager : MonoBehaviour
     public float multliplierThreshold1 = 2f;
     public float multliplierThreshold2 = 2.5f;
 
+
+    [Header("Grenade State")]
+    [Space(10)]
+    //Melee State variables
+
+    public float throwForce = 40f;
+    public GameObject grenadePrefab;
+
+    [Header("Cinemachine")]
+    public CinemachineVirtualCamera aimVirtualCamera;
+
+    [Header("Display Controls")]
+    public LineRenderer LineRenderer;
+    public int linePoints = 25;
+    public float timeBetweenPoints = 0.1f;
+    public LayerMask GrenadeCollisionMask;
+
     // Start is called before the first frame update
     void Start()
     {
         //Get references
         playerInput = GetComponent<PlayerInputs>();
-        animator = GetComponent<Animator>();
-        movementController = GetComponent<MovementController>();
 
         //Get damage point
         damagePoint = transform.Find("DamagePoint");

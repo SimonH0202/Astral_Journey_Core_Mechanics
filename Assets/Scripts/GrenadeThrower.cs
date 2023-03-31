@@ -9,23 +9,12 @@ public class GrenadeThrower : MonoBehaviour
 
     public float throwForce = 40f;
     public GameObject grenadePrefab;
-    public Transform player;
-
     GameObject grenade;
-   
-
-    [SerializeField]
-    private CinemachineVirtualCamera aimVirtualCamera;
-
-
+    [SerializeField] private CinemachineVirtualCamera aimVirtualCamera;
     PlayerInputs playerInput;
-    
+    [SerializeField] private Transform ReleasePosition;
 
-    [SerializeField]
-    private Transform ReleasePosition;
-
-    [SerializeField]
-    private LineRenderer LineRenderer;
+    [SerializeField] private LineRenderer LineRenderer;
 
     [Header("Display Controls")]
     [SerializeField]
@@ -36,10 +25,6 @@ public class GrenadeThrower : MonoBehaviour
     private float TimeBetweenPoints = 0.1f;
 
     private LayerMask GrenadeCollisionMask;
-
-    [SerializeField]
-    private Transform debugTransform;
-
     private MovementController movementController;
 
     
@@ -52,7 +37,7 @@ public class GrenadeThrower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         if (playerInput.grenadeAim)
+        if (playerInput.grenadeAim)
         {
             movementController.SetRotateOnMove(false);
             Vector3 mouseWorldPosition = Vector3.zero;
@@ -77,7 +62,7 @@ public class GrenadeThrower : MonoBehaviour
             if (playerInput.attack)
                 {   
                     grenade = Instantiate(grenadePrefab, ReleasePosition.position, transform.rotation);
-                    grenade.transform.parent = player;
+                    grenade.transform.parent = transform;
                     Rigidbody grenadeRb = grenade.GetComponent<Rigidbody>();
                     grenadeRb.velocity = throwForce * Camera.main.transform.forward;
                     grenade.transform.parent = null;
