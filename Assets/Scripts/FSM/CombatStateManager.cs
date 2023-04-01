@@ -47,12 +47,21 @@ public class CombatStateManager : MonoBehaviour
 
     [Header("Grenade State")]
     [Space(10)]
-    //Melee State variables
-
+    //Grenade State variables
     public float throwForce = 40f;
 
     public float grenadeCooldown = 1f;
     public GameObject grenadePrefab;
+    public float maxDistance = 20f;
+
+    [Header("Shooter State")]
+    [Space(10)]
+    //Shooter State variables
+    public float projectileSpeed = 100f;
+
+    public float shootingCooldown = 0.5f;
+    public GameObject projectilePrefab;
+    public GameObject crosshair;
 
     [Header("Cinemachine")]
     public CinemachineVirtualCamera aimVirtualCamera;
@@ -62,8 +71,10 @@ public class CombatStateManager : MonoBehaviour
     public int linePoints = 25;
     public float timeBetweenPoints = 0.1f;
     public LayerMask GrenadeCollisionMask;
-    public float maxDistance = 20f;
+  
 
+ 
+    
     // Start is called before the first frame update
     void Start()
     {

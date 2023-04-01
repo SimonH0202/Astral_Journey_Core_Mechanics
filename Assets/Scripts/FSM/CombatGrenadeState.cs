@@ -68,17 +68,12 @@ public class CombatGrenadeState : CombatBaseState
 
                     //Instantiate grenade
                     grenade = GameObject.Instantiate(manager.grenadePrefab, manager.LineRenderer.transform.position, manager.transform.rotation);
-                    grenade.transform.parent = manager.transform;
 
                     //Set velocity
                     Rigidbody grenadeRb = grenade.GetComponent<Rigidbody>();
                     grenadeRb.velocity = manager.throwForce * Camera.main.transform.forward;
-                    grenade.transform.parent = null;
 
-                    //Destroy grenade
-                    grenade = null;
                     playerInput.attack = false;
-                    GameObject.Destroy(grenade);
 
                     //Reset attack bool after delay
                     manager.StartCoroutine(ThrowGrenadeDelay(manager));
@@ -93,7 +88,6 @@ public class CombatGrenadeState : CombatBaseState
             movementController.SetStrafing(false);
             manager.LineRenderer.enabled = false;
             manager.aimVirtualCamera.gameObject.SetActive(false);
-            GameObject.Destroy(grenade);
 
             //Set animation layer weight
             animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
@@ -120,7 +114,6 @@ public class CombatGrenadeState : CombatBaseState
             //Max distance reached, change color of line renderer
             if (Vector3.Distance(startPosition, point) > manager.maxDistance)
             {
-                Debug.Log("Max distance reached");
                 manager.LineRenderer.material.SetColor("_EmissionColor", Color.red);
                 maxDistanceReached = true;
             }

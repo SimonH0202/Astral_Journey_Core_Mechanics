@@ -17,7 +17,6 @@ public class Grenade : MonoBehaviour
     public LayerMask enemyLayers;
 
 
-    // Update is called once per frame
     void Update()
     {
         if(isCollided && !hasExploded)
