@@ -50,6 +50,8 @@ public class CombatStateManager : MonoBehaviour
     //Melee State variables
 
     public float throwForce = 40f;
+
+    public float grenadeCooldown = 1f;
     public GameObject grenadePrefab;
 
     [Header("Cinemachine")]

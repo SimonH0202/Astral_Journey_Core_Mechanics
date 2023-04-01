@@ -11,6 +11,7 @@ public class CombatGrenadeState : CombatBaseState
 
     //Private Grenade varibles
     GameObject grenade;
+    bool isAttacking = false;
 
     public override void EnterState(CombatStateManager manager)
     {
@@ -48,8 +49,11 @@ public class CombatGrenadeState : CombatBaseState
 
             DrawProjection(manager);
 
-            if (playerInput.attack)
+            if (playerInput.attack && playerInput.grenadeAim && !isAttacking)
                 {   
+                    //Set attack bool
+                    isAttacking = true;
+
                     //Instantiate grenade
                     grenade = GameObject.Instantiate(manager.grenadePrefab, manager.LineRenderer.transform.position, manager.transform.rotation);
                     grenade.transform.parent = manager.transform;
@@ -63,6 +67,9 @@ public class CombatGrenadeState : CombatBaseState
                     grenade = null;
                     playerInput.attack = false;
                     GameObject.Destroy(grenade);
+
+                    //Reset attack bool after delay
+                    manager.StartCoroutine(ThrowGrenadeDelay(manager));
                 } 
 
                 
@@ -107,6 +114,12 @@ public class CombatGrenadeState : CombatBaseState
                 return;
             }
         }
+    }
+
+    private IEnumerator ThrowGrenadeDelay(CombatStateManager manager)
+    {
+        yield return new WaitForSeconds(manager.grenadeCooldown);
+        isAttacking = false;
     }
 
     public override void ExitState(CombatStateManager manager)
