@@ -20,6 +20,7 @@ public class MovementController : MonoBehaviour
     bool isMovementPressed;
     bool isMovementLocked = false;
     bool rotateOnMove = true;
+    bool isStrafing = false;
     float turnSmoothVelocity;
     float targetSpeed;
 
@@ -53,6 +54,7 @@ public class MovementController : MonoBehaviour
     //Public Movement variables
     public float movementSpeed = 2.5f;
     public float runSpeed = 8f;
+    public float strafeSpeed = 4f;
     public float rotationFactorPerFrame = 15.0f;
 
     [Header("Dodge Settings")]
@@ -70,6 +72,8 @@ public class MovementController : MonoBehaviour
     int isRunningHash;
     int isJumpingHash;
     int isDodgingHash;
+    int isHorizontalMovementHash;
+    int isVerticalMovementHash;
 
 
     void Awake()
@@ -86,6 +90,8 @@ public class MovementController : MonoBehaviour
         isRunningHash = Animator.StringToHash("isRunning");
         isJumpingHash = Animator.StringToHash("isJumping");
         isDodgingHash = Animator.StringToHash("isDodging");
+        isHorizontalMovementHash = Animator.StringToHash("horizontalMovement");
+        isVerticalMovementHash = Animator.StringToHash("verticalMovement");
 
         //Setup Jump Variables
         SetupJumpVariables();
@@ -135,7 +141,7 @@ public class MovementController : MonoBehaviour
     void HandleRun()
     {
         //Set current movement speed
-        if (playerInput.sprint)
+        if (playerInput.sprint && !isStrafing)
         {
             targetSpeed = runSpeed;
         }
@@ -145,7 +151,7 @@ public class MovementController : MonoBehaviour
     void HandleJump()
     {
         //Handle Jumping and Animation
-        if (!isJumping && characterController.isGrounded && playerInput.jump) {
+        if (!isJumping && characterController.isGrounded && playerInput.jump && !isStrafing && !isMovementLocked) {
             animator.SetBool(isJumpingHash, true);
             isJumpAnimating = true;
             isJumping = true;
@@ -177,7 +183,7 @@ public class MovementController : MonoBehaviour
             movement.z = movementInput.y;
         }
 
-        if (playerInput.move.magnitude >= 0.1f && !isMovementLocked) {
+        if (playerInput.move.magnitude >= 0.1f && !isMovementLocked && !isStrafing) {
             //Calculate and set rotation with camera and movement
             Quaternion targetRotation = Quaternion.Euler(0, Mathf.Atan2(movement.x, movement.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y, 0);
             if(rotateOnMove)
@@ -192,6 +198,47 @@ public class MovementController : MonoBehaviour
             moveDirection.x = 0;
             moveDirection.z = 0;
         }
+    }
+
+    void HandleStrafeMovement()
+    {
+        if (isStrafing)
+        {
+            //Set animation layer weight to 1
+			animator.SetLayerWeight(1, 1);
+
+            //Get camera forward and right vectors
+			Vector3 forward = cameraTransform.forward;
+			Vector3 right = cameraTransform.right;
+			forward.y = 0;
+			right.y = 0;
+			forward.Normalize();
+			right.Normalize();
+
+            //Set movement direction to where the player is facing
+			Vector3 dir = (forward * playerInput.move.y + right * playerInput.move.x).normalized;
+            moveDirection.x = dir.x;
+            moveDirection.z = dir.z;
+
+            //Set animation values
+			animator.SetFloat(isHorizontalMovementHash, playerInput.move.x, 0.1f, Time.deltaTime);
+			animator.SetFloat(isVerticalMovementHash, playerInput.move.y, 0.1f, Time.deltaTime);
+
+            //Set strafe speed
+            targetSpeed = strafeSpeed;
+        }
+        else
+        {
+            //Set animation layer weight to 0
+            animator.SetLayerWeight(1, 0);
+
+            //Reset animation values
+            animator.SetFloat(isHorizontalMovementHash, 0);
+            animator.SetFloat(isVerticalMovementHash, 0);
+
+            //Set movement speed to normal
+            targetSpeed = movementSpeed;
+        }    
     }
 
     public void DisableMovement()
@@ -233,6 +280,11 @@ public class MovementController : MonoBehaviour
     public void SetRotateOnMove(bool newRotateOnMove)
     {
         rotateOnMove = newRotateOnMove;
+    }
+
+    public void SetStrafing(bool newStrafing)
+    {
+        isStrafing = newStrafing;
     }
 
     void HandleGravity()
@@ -303,6 +355,7 @@ public class MovementController : MonoBehaviour
         isCurrentDeviceMouse = input.currentControlScheme == "MouseKeyboard";
 
         HandleRotation();
+        HandleStrafeMovement();
         HandleRun();
         HandleDodge();
         HandleAnimation();

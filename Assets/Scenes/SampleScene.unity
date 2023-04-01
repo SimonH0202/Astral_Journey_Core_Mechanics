@@ -1064,6 +1064,7 @@ MonoBehaviour:
   lockCameraPosition: 0
   movementSpeed: 2.5
   runSpeed: 8
+  strafeSpeed: 4
   rotationFactorPerFrame: 15
   dodgeDistance: 8
   dodgeTimer: 0.6
@@ -10573,6 +10574,7 @@ MonoBehaviour:
   multliplierThreshold1: 2
   multliplierThreshold2: 2.5
   throwForce: 40
+  grenadeCooldown: 1
   grenadePrefab: {fileID: 2069209867580707632, guid: 3bbf66339b7fb924abc9fa4724f8795b,
     type: 3}
   aimVirtualCamera: {fileID: 649359405}

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CombatGrenadeState : CombatBaseState
 {
-    //References
+    //References 
     PlayerInputs playerInput;
     Animator animator;
     MovementController movementController;
@@ -13,10 +13,16 @@ public class CombatGrenadeState : CombatBaseState
     GameObject grenade;
     bool isAttacking = false;
 
+    //Animation hashes
+    int isAimingHash;
+
     public override void EnterState(CombatStateManager manager)
     {
         //Log state change
         Debug.Log("Entered Grenade State");
+
+        //Get animation hashes
+        isAimingHash = Animator.StringToHash("isAiming");
 
         //Get references
         playerInput = manager.GetComponent<PlayerInputs>();
@@ -30,6 +36,7 @@ public class CombatGrenadeState : CombatBaseState
         {
             //Set up line renderer
             movementController.SetRotateOnMove(false);
+            movementController.SetStrafing(true);
             Vector3 mouseWorldPosition = Vector3.zero;
             Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
@@ -38,14 +45,18 @@ public class CombatGrenadeState : CombatBaseState
                 mouseWorldPosition = raycastHit.point;
             }
 
+            //Activate aim camera
             manager.aimVirtualCamera.gameObject.SetActive(true);
 
-
+            //Rotate player to face mouse
             Vector3 worldAimTarget = mouseWorldPosition;
             worldAimTarget.y = manager.transform.position.y;
             Vector3 aimDirection = (worldAimTarget - manager.transform.position).normalized;
 
             manager.transform.forward = Vector3.Lerp(manager.transform.forward, aimDirection, Time.deltaTime * 20f);
+
+            //Set animation layer weight
+            animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 1f, Time.deltaTime * 10f));
 
             DrawProjection(manager);
 
@@ -78,9 +89,13 @@ public class CombatGrenadeState : CombatBaseState
         {
             //Reset movement, grenade, camera and line renderer
             movementController.SetRotateOnMove(true);
+            movementController.SetStrafing(false);
             manager.LineRenderer.enabled = false;
             manager.aimVirtualCamera.gameObject.SetActive(false);
             GameObject.Destroy(grenade);
+
+            //Set animation layer weight
+            animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
         }
 
     }
