@@ -12,6 +12,7 @@ public class CombatGrenadeState : CombatBaseState
     //Private Grenade varibles
     GameObject grenade;
     bool isAttacking = false;
+    bool maxDistanceReached = false;
 
     //Animation hashes
     int isAimingHash;
@@ -60,7 +61,7 @@ public class CombatGrenadeState : CombatBaseState
 
             DrawProjection(manager);
 
-            if (playerInput.attack && playerInput.grenadeAim && !isAttacking)
+            if (playerInput.attack && playerInput.grenadeAim && !isAttacking && !maxDistanceReached)
                 {   
                     //Set attack bool
                     isAttacking = true;
@@ -115,6 +116,20 @@ public class CombatGrenadeState : CombatBaseState
             point.y = startPosition.y + startVelocity.y * time + (Physics.gravity.y / 2f * time * time);
 
             manager.LineRenderer.SetPosition(i, point);
+
+            //Max distance reached, change color of line renderer
+            if (Vector3.Distance(startPosition, point) > manager.maxDistance)
+            {
+                Debug.Log("Max distance reached");
+                manager.LineRenderer.material.SetColor("_EmissionColor", Color.red);
+                maxDistanceReached = true;
+            }
+            else
+            {
+                manager.LineRenderer.material.SetColor("_EmissionColor", Color.white);
+                maxDistanceReached = false;
+            }
+            
 
             Vector3 lastPosition = manager.LineRenderer.GetPosition(i - 1);
 

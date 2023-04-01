@@ -62,6 +62,7 @@ public class CombatStateManager : MonoBehaviour
     public int linePoints = 25;
     public float timeBetweenPoints = 0.1f;
     public LayerMask GrenadeCollisionMask;
+    public float maxDistance = 20f;
 
     // Start is called before the first frame update
     void Start()
