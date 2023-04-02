@@ -62,6 +62,7 @@ public class CombatStateManager : MonoBehaviour
     public float shootingCooldown = 0.5f;
     public GameObject projectilePrefab;
     public GameObject crosshair;
+    public float maxDistanceShooter = 50f;
 
     [Header("Cinemachine")]
     public CinemachineVirtualCamera aimVirtualCamera;

@@ -43,7 +43,6 @@ public class CombatShooterState : CombatBaseState
             Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
             if(Physics.Raycast(ray, out RaycastHit raycastHit, 999f))
             {
-
                 mouseWorldPosition = raycastHit.point;
             }
 
@@ -72,15 +71,14 @@ public class CombatShooterState : CombatBaseState
 
                     //Instantiate projectile
                     Vector3 aimDir = (mouseWorldPosition - manager.LineRenderer.transform.position).normalized;
-                    projectile = GameObject.Instantiate(manager.projectilePrefab, manager.LineRenderer.transform.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                    projectile = GameObject.Instantiate(manager.projectilePrefab, manager.LineRenderer.transform.position, Quaternion.LookRotation(aimDir, Vector3.up)); 
 
                     //Set velocity
                     Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
                     projectileRb.velocity = manager.projectileSpeed * Camera.main.transform.forward;
-              
+
                     playerInput.attack = false;
                  
-
                     //Reset attack bool after delay
                     manager.StartCoroutine(ShootDelay(manager));
                 } 
