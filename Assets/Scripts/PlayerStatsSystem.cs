@@ -15,14 +15,20 @@ public class PlayerStatsSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        healthBar.SetMaxStat(health);
+        if (healthBar != null)
+        {
+            healthBar.SetMaxStat(health);
+        }
     }
 
     public void TakeDamage(float damage)
     {
         if (!isVunerable) return;
         health -= damage;
-        healthBar.SetStat(health);
+        if (healthBar != null)
+        {
+            healthBar.SetStat(health);
+        }
         if (health <= 0)
         {
             Die();

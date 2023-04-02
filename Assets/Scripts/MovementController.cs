@@ -36,6 +36,7 @@ public class MovementController : MonoBehaviour
     //Private Cinemachine variables
     private float cinemachineTargetYaw;
     private float cinemachineTargetPitch;
+    private float sensitivity = 1.0f;
     private bool isCurrentDeviceMouse;
 
     [Header("Jump Settings")]
@@ -124,8 +125,8 @@ public class MovementController : MonoBehaviour
             //Calculate our rotation multiplier based on if we are using a mouse or controller
             float deltaTimeMultiplier = isCurrentDeviceMouse ? 1f : Time.deltaTime;
 
-            cinemachineTargetYaw += playerInput.look.x * deltaTimeMultiplier;
-            cinemachineTargetPitch += playerInput.look.y * deltaTimeMultiplier;
+            cinemachineTargetYaw += playerInput.look.x * deltaTimeMultiplier * sensitivity;
+            cinemachineTargetPitch += playerInput.look.y * deltaTimeMultiplier * sensitivity;
         }
 
         //Clamp rotations to limit values tp 360 degrees
@@ -164,7 +165,7 @@ public class MovementController : MonoBehaviour
 
     void HandleDodge()
     {
-        if (playerInput.dodge && !isJumping && !isDodging && !isMovementLocked)
+        if (playerInput.dodge && !isJumping && !isDodging && !isMovementLocked && !isStrafing)
         {
             isDodging = true;
             StartCoroutine(Dodge());
@@ -285,6 +286,11 @@ public class MovementController : MonoBehaviour
     public void SetStrafing(bool newStrafing)
     {
         isStrafing = newStrafing;
+    }
+
+    public void SetSensitiviy(float newSensitivity)
+    {
+        sensitivity = newSensitivity;
     }
 
     void HandleGravity()

@@ -31,6 +31,8 @@ public class EnemyAI : MonoBehaviour
     private int currentPoint;
     private bool patrolling;
     private bool attacking;
+    private bool hit;
+
 
     private List<GameObject> damagedPlayers = new List<GameObject>();
 
@@ -80,6 +82,7 @@ public class EnemyAI : MonoBehaviour
         {
             PatrolAndAttack();
             HandleWalkAnimation();
+            AttackIfHit();
         }
     }
 
@@ -123,10 +126,24 @@ public class EnemyAI : MonoBehaviour
         }       
     }
 
+    public void AttackIfHit()
+    {
+        if (hit && patrolling)
+        {
+            //Follow player
+            FollowPlayer();
+
+            //Start timer to stop following
+            StartCoroutine(StopFollowing());
+        }
+    }
+    
+
     public void TakeDamage(float damage)
     {
-        health -= damage;
-        healthBar.SetStat(health);
+            health -= damage;
+            healthBar.SetStat(health);
+            hit = true;
     }
 
     void Die()
@@ -173,6 +190,14 @@ public class EnemyAI : MonoBehaviour
         attacking = false;
         agent.isStopped = false;
         damagedPlayers.Clear();
+    }
+
+    //Stop following coroutine
+    IEnumerator StopFollowing()
+    {
+        yield return new WaitForSeconds(5f);
+        hit = false;
+        patrolling = true;
     }
 
     void HandleWalkAnimation()

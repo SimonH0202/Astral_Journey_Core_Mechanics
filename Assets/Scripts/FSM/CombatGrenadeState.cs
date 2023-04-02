@@ -45,6 +45,12 @@ public class CombatGrenadeState : CombatBaseState
             {
                 mouseWorldPosition = raycastHit.point;
             }
+            //Set weight of aim rig
+            manager.aimRig.weight = Mathf.Lerp(manager.aimRig.weight, 1f, Time.deltaTime * 10f);
+
+            //Aim arm towards mouseWorldPosition
+            movementController.SetSensitiviy(manager.aimSenitivity);
+            manager.armAimPoint.position = mouseWorldPosition;
 
             //Activate aim camera
             manager.aimVirtualCamera.gameObject.SetActive(true);
@@ -91,6 +97,9 @@ public class CombatGrenadeState : CombatBaseState
 
             //Set animation layer weight
             animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
+
+            //Set weight of aim rig
+            manager.aimRig.weight = Mathf.Lerp(manager.aimRig.weight, 0f, Time.deltaTime * 10f);
         }
 
     }

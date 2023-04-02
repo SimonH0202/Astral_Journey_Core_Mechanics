@@ -5,11 +5,12 @@ using UnityEngine;
 public class Grenade : MonoBehaviour
 {
 
-    public float radius = 5f;
+    [SerializeField] float radius = 5f;
+    [SerializeField] float grenadeDmg = 20f;
 
-    public GameObject explosionEffect;
+    [Header("Effects")]
+    [SerializeField] GameObject explosionEffect;
 
-    float grenadeDmg = 20f;
     bool isCollided;
     bool hasExploded = false;
 

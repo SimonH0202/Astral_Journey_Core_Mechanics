@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.Animations.Rigging;
 
 public class CombatStateManager : MonoBehaviour
 {
@@ -24,8 +24,7 @@ public class CombatStateManager : MonoBehaviour
     public List<AttackSO> JumpAttacks;
 
     [Header("Attack Animation Settings")]
-    //Drop down menu for attack animations
-
+    //Public Attack Animation variables
     public float attackAnimSpeed = 1.5f;
     public float jumpAttackAnimSpeed = 2f;
 
@@ -49,20 +48,19 @@ public class CombatStateManager : MonoBehaviour
     [Space(10)]
     //Grenade State variables
     public float throwForce = 40f;
-
     public float grenadeCooldown = 1f;
-    public GameObject grenadePrefab;
     public float maxDistance = 20f;
+    public GameObject grenadePrefab;
 
     [Header("Shooter State")]
     [Space(10)]
     //Shooter State variables
     public float projectileSpeed = 100f;
-
     public float shootingCooldown = 0.5f;
-    public GameObject projectilePrefab;
-    public GameObject crosshair;
     public float maxDistanceShooter = 50f;
+    public float aimSenitivity = 0.5f;
+    public GameObject crosshair;
+    public GameObject projectilePrefab;
 
     [Header("Cinemachine")]
     public CinemachineVirtualCamera aimVirtualCamera;
@@ -72,6 +70,11 @@ public class CombatStateManager : MonoBehaviour
     public int linePoints = 25;
     public float timeBetweenPoints = 0.1f;
     public LayerMask GrenadeCollisionMask;
+
+    [Header("General Animation Settings")]
+    //General Animation variables
+    public Transform armAimPoint;
+    public Rig aimRig;
   
 
  

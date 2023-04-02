@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    float projectileDmg = 20f;
-    float projectileRange = 100f;
+    [SerializeField] float projectileDmg = 20f;
+    [SerializeField] float projectileRange = 100f;
 
     Vector3 originPosition;
    
