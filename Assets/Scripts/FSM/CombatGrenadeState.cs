@@ -8,6 +8,7 @@ public class CombatGrenadeState : CombatBaseState
     PlayerInputs playerInput;
     Animator animator;
     MovementController movementController;
+    LineRenderer lineRenderer;
 
     //Private Grenade varibles
     GameObject grenade;
@@ -29,13 +30,20 @@ public class CombatGrenadeState : CombatBaseState
         playerInput = manager.GetComponent<PlayerInputs>();
         movementController = manager.GetComponent<MovementController>();
         animator = manager.GetComponent<Animator>();
+        lineRenderer = manager.transform.Find("ReleasePosition").GetComponent<LineRenderer>();
     }
 
     public override void UpdateState(CombatStateManager manager)
     {
+        Aim(manager);
+    }
+
+    private void Aim(CombatStateManager manager)
+    {
         if (playerInput.grenadeAim)
         {
             //Set up line renderer
+            lineRenderer.enabled = true;
             movementController.SetRotateOnMove(false);
             movementController.SetStrafing(true);
             Vector3 mouseWorldPosition = Vector3.zero;
@@ -66,33 +74,15 @@ public class CombatGrenadeState : CombatBaseState
             animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 1f, Time.deltaTime * 10f));
 
             DrawProjection(manager);
-
-            if (playerInput.attack && playerInput.grenadeAim && !isAttacking && !maxDistanceReached)
-                {   
-                    //Set attack bool
-                    isAttacking = true;
-
-                    //Instantiate grenade
-                    grenade = GameObject.Instantiate(manager.grenadePrefab, manager.LineRenderer.transform.position, manager.transform.rotation);
-
-                    //Set velocity
-                    Rigidbody grenadeRb = grenade.GetComponent<Rigidbody>();
-                    grenadeRb.velocity = manager.throwForce * Camera.main.transform.forward;
-
-                    playerInput.attack = false;
-
-                    //Reset attack bool after delay
-                    manager.StartCoroutine(ThrowGrenadeDelay(manager));
-                } 
-
-                
+            Fire(manager);
+       
         }   
         if(!playerInput.grenadeAim)
         {
             //Reset movement, grenade, camera and line renderer
             movementController.SetRotateOnMove(true);
             movementController.SetStrafing(false);
-            manager.LineRenderer.enabled = false;
+            lineRenderer.enabled = false;
             manager.aimVirtualCamera.gameObject.SetActive(false);
 
             //Set animation layer weight
@@ -101,48 +91,72 @@ public class CombatGrenadeState : CombatBaseState
             //Set weight of aim rig
             manager.aimRig.weight = Mathf.Lerp(manager.aimRig.weight, 0f, Time.deltaTime * 10f);
         }
+    }
 
+    private void Fire(CombatStateManager manager)
+    {
+        if (playerInput.attack && playerInput.grenadeAim && !isAttacking && !maxDistanceReached)
+        {   
+            //Set attack bool
+            isAttacking = true;
+
+            //Instantiate grenade
+            grenade = GameObject.Instantiate(manager.grenadeSettings.grenadePrefab, lineRenderer.transform.position, manager.transform.rotation);
+
+            //Set velocity
+            Rigidbody grenadeRb = grenade.GetComponent<Rigidbody>();
+            grenadeRb.velocity = manager.grenadeSettings.throwForce * Camera.main.transform.forward;
+
+            playerInput.attack = false;
+
+            //Reset attack bool after delay
+            manager.StartCoroutine(ThrowGrenadeDelay(manager));
+        }  
     }
 
     private void DrawProjection(CombatStateManager manager)
     {
-        manager.LineRenderer.enabled = true;
-        manager.LineRenderer.positionCount = Mathf.CeilToInt(manager.linePoints / manager.timeBetweenPoints) + 1;
-        Vector3 startPosition = manager.LineRenderer.transform.position;
-        Vector3 startVelocity = manager.throwForce * Camera.main.transform.forward;
+        lineRenderer.enabled = true;
+        lineRenderer.positionCount = Mathf.CeilToInt(manager.grenadeSettings.linePoints / manager.grenadeSettings.timeBetweenPoints) + 1;
+        Vector3 startPosition = lineRenderer.transform.position;
+        Vector3 startVelocity = manager.grenadeSettings.throwForce * Camera.main.transform.forward;
         int i = 0;
-        manager.LineRenderer.SetPosition(i, startPosition);
-        for (float time = 0; time < manager.linePoints; time += manager.timeBetweenPoints)
+        lineRenderer.SetPosition(i, startPosition);
+        for (float time = 0; time < manager.grenadeSettings.linePoints; time += manager.grenadeSettings.timeBetweenPoints)
         {
             i++;
             Vector3 point = startPosition + time * startVelocity;
             point.y = startPosition.y + startVelocity.y * time + (Physics.gravity.y / 2f * time * time);
 
-            manager.LineRenderer.SetPosition(i, point);
+            lineRenderer.SetPosition(i, point);
 
             //Max distance reached, change color of line renderer
-            if (Vector3.Distance(startPosition, point) > manager.maxDistance)
+            if (Vector3.Distance(startPosition, point) > manager.grenadeSettings.maxDistance)
             {
-                manager.LineRenderer.material.SetColor("_EmissionColor", Color.red);
+                lineRenderer.material.SetColor("_EmissionColor", Color.red);
                 maxDistanceReached = true;
+            }
+            else if (isAttacking)
+            {
+                lineRenderer.material.SetColor("_EmissionColor", Color.yellow);
             }
             else
             {
-                manager.LineRenderer.material.SetColor("_EmissionColor", Color.white);
+                lineRenderer.material.SetColor("_EmissionColor", Color.white);
                 maxDistanceReached = false;
             }
             
 
-            Vector3 lastPosition = manager.LineRenderer.GetPosition(i - 1);
+            Vector3 lastPosition = lineRenderer.GetPosition(i - 1);
 
             if (Physics.Raycast(lastPosition, 
                 (point - lastPosition).normalized, 
                 out RaycastHit hit,
                 (point - lastPosition).magnitude,
-                manager.GrenadeCollisionMask))
+                manager.grenadeSettings.GrenadeCollisionMask))
             {
-                manager.LineRenderer.SetPosition(i, hit.point);
-                manager.LineRenderer.positionCount = i + 1;
+                lineRenderer.SetPosition(i, hit.point);
+                lineRenderer.positionCount = i + 1;
                 return;
             }
         }
@@ -150,12 +164,12 @@ public class CombatGrenadeState : CombatBaseState
 
     private IEnumerator ThrowGrenadeDelay(CombatStateManager manager)
     {
-        yield return new WaitForSeconds(manager.grenadeCooldown);
+        yield return new WaitForSeconds(manager.grenadeSettings.grenadeCooldown);
         isAttacking = false;
     }
 
     public override void ExitState(CombatStateManager manager)
     {
-        manager.LineRenderer.enabled = false;
+        lineRenderer.enabled = false;
     }
 }

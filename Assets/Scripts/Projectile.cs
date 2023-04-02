@@ -7,12 +7,18 @@ public class Projectile : MonoBehaviour
     [SerializeField] float projectileDmg = 20f;
     [SerializeField] float projectileRange = 100f;
 
+    [SerializeField] float projectileSpeed = 100f;
+
     Vector3 originPosition;
    
     void Start()
     {
-        gameObject.transform.Rotate(90, 0, 0);
+        //Set origin position
         originPosition = transform.position;
+
+        //Set velocity
+        Rigidbody projectileRb = GetComponent<Rigidbody>();
+        projectileRb.velocity = projectileSpeed * transform.forward;
     }
 
     void Update()

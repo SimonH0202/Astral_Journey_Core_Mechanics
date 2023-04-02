@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b4f72995d8dbcf4bb4fffd5c4563e39, type: 3}
+  m_Name: MeleeSettings
+  m_EditorClassIdentifier: 
+  Attacks:
+  - {fileID: 11400000, guid: 91316e3dfb25c064e8b3abe3ccc0deb8, type: 2}
+  - {fileID: 11400000, guid: 91316e3dfb25c064e8b3abe3ccc0deb8, type: 2}
+  - {fileID: 11400000, guid: 87cb6e5117f92a24ea8c44a5859d8aab, type: 2}
+  JumpAttacks:
+  - {fileID: 11400000, guid: 45f75e81a31f9f34d9db1f7d273c0902, type: 2}
+  attackAnimSpeed: 1.5
+  jumpAttackAnimSpeed: 2
+  damageRadius: 1
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  weaponLength: 1.4
+  jumpDamageRadius: 1.5
+  groundLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  multliplierThreshold1: 2
+  multliplierThreshold2: 2.5

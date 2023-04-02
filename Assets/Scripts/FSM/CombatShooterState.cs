@@ -8,6 +8,7 @@ public class CombatShooterState : CombatBaseState
     PlayerInputs playerInput;
     Animator animator;
     MovementController movementController;
+    Transform aimPoint;
 
     //Private Shooter varibles
     GameObject projectile;
@@ -28,9 +29,15 @@ public class CombatShooterState : CombatBaseState
         playerInput = manager.GetComponent<PlayerInputs>();
         movementController = manager.GetComponent<MovementController>();
         animator = manager.GetComponent<Animator>();
+        aimPoint = manager.transform.Find("ReleasePosition");
     }
 
     public override void UpdateState(CombatStateManager manager)
+    {
+        Aim(manager);
+    }
+
+    private void Aim(CombatStateManager manager)
     {
         if (playerInput.grenadeAim)
         {
@@ -70,32 +77,14 @@ public class CombatShooterState : CombatBaseState
             //Set animation layer weight
             animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 1f, Time.deltaTime * 10f));
 
-
-            if (playerInput.attack && playerInput.grenadeAim && !isAttacking)
-                {   
-                    //Set attack bool
-                    isAttacking = true;
-
-                    //Instantiate projectile
-                    Vector3 aimDir = (mouseWorldPosition - manager.LineRenderer.transform.position).normalized;
-                    projectile = GameObject.Instantiate(manager.projectilePrefab, manager.LineRenderer.transform.position, Quaternion.LookRotation(aimDir, Vector3.up)); 
-
-                    //Set velocity
-                    Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
-                    projectileRb.velocity = manager.projectileSpeed * Camera.main.transform.forward;
-
-                    playerInput.attack = false;
-                 
-                    //Reset attack bool after delay
-                    manager.StartCoroutine(ShootDelay(manager));
-                } 
+            //Fire projectile
+            Fire(manager, mouseWorldPosition);
         }   
         if(!playerInput.grenadeAim)
         {
             //Reset movement, projectile,crosshair, camera and line renderer
             movementController.SetRotateOnMove(true);
             movementController.SetStrafing(false);
-            manager.LineRenderer.enabled = false;
             manager.aimVirtualCamera.gameObject.SetActive(false);
             manager.crosshair.gameObject.SetActive(false);
 
@@ -107,9 +96,31 @@ public class CombatShooterState : CombatBaseState
         }
     }
 
+    private void Fire(CombatStateManager manager, Vector3 mouseWorldPosition)
+    {
+        if (playerInput.attack && playerInput.grenadeAim && !isAttacking)
+        {   
+            //Set attack bool
+            isAttacking = true;
+
+            //Instantiate projectile
+            Vector3 aimDir = (mouseWorldPosition - aimPoint.position).normalized;
+            projectile = GameObject.Instantiate(manager.shooterSettings.projectilePrefab, aimPoint.transform.position, Quaternion.LookRotation(aimDir, Vector3.up)); 
+
+            //Set velocity
+            Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
+            projectileRb.velocity = manager.shooterSettings.projectileSpeed * manager.transform.forward;
+
+            playerInput.attack = false;
+                 
+            //Reset attack bool after delay
+            manager.StartCoroutine(ShootDelay(manager));
+        } 
+    }
+
     private IEnumerator ShootDelay(CombatStateManager manager)
     {
-        yield return new WaitForSeconds(manager.shootingCooldown);
+        yield return new WaitForSeconds(manager.shooterSettings.shootingCooldown);
         isAttacking = false;
     }
 

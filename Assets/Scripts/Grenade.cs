@@ -15,7 +15,8 @@ public class Grenade : MonoBehaviour
     bool hasExploded = false;
 
     List<GameObject> damagedEnemies = new List<GameObject>();
-    public LayerMask enemyLayers;
+    List<GameObject> damagedPlayers = new List<GameObject>();
+    public LayerMask hitLayers;
 
 
     void Update()
@@ -32,16 +33,28 @@ public class Grenade : MonoBehaviour
     {
         Instantiate(explosionEffect, transform.position, transform.rotation);
    
-        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, radius, enemyLayers);
+        Collider[] hits = Physics.OverlapSphere(transform.position, radius, hitLayers);
 
-        foreach(Collider enemy in hitEnemies)
+        foreach(Collider h in hits)
         {
-             if (!damagedEnemies.Contains(enemy.gameObject) && hasExploded)
+            if (!damagedEnemies.Contains(h.gameObject) && hasExploded)
+            {
+                //Damage enemy
+                if (h.TryGetComponent(out EnemyAI enemy))
                 {
-                    //Damage enemy
-                    damagedEnemies.Add(enemy.gameObject);
-                    enemy.GetComponent<EnemyAI>().TakeDamage(grenadeDmg);
+                    damagedEnemies.Add(h.gameObject);
+                    enemy.TakeDamage(grenadeDmg);
                 }
+            }
+            if (!damagedPlayers.Contains(h.gameObject) && hasExploded)
+            {
+                //Damage player
+                if (h.TryGetComponent(out PlayerStatsSystem player))
+                {
+                    damagedPlayers.Add(h.gameObject);
+                    player.TakeDamage(grenadeDmg);
+                }
+            }
         }
     }
 
