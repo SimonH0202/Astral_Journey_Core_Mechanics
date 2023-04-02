@@ -872,7 +872,7 @@ MonoBehaviour:
   strafeSpeed: 4
   rotationFactorPerFrame: 15
   dodgeDistance: 8
-  dodgeTimer: 0.6
+  dodgeTimer: 0.75
   gravity: -9.81
 --- !u!143 &553964142
 CharacterController:

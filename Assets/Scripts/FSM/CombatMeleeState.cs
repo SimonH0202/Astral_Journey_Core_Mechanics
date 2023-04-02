@@ -66,7 +66,7 @@ public class CombatMeleeState : CombatBaseState
 
     void HandleAttack(CombatStateManager manager)
     {
-        if (playerInput.attack && !movementController.GetIsJumping() && !isAttacking && !isJumpAttacking)
+        if (playerInput.attack && !movementController.GetIsJumping() && !movementController.GetIsDodging() && !isAttacking && !isJumpAttacking)
         {
             //Start attack, set runtime animator controller to attack animation
             isAttacking = true;
@@ -80,7 +80,7 @@ public class CombatMeleeState : CombatBaseState
 
     void HandleJumpAttack(CombatStateManager manager)
     {
-        if (playerInput.attack && movementController.GetIsJumping() && !isAttacking && !isJumpAttacking)
+        if (playerInput.attack && movementController.GetIsJumping() && !movementController.GetIsDodging() && !isAttacking && !isJumpAttacking)
         {
             //Calculate jump attack damage multiplier
             distance = Physics.Raycast(manager.transform.position, Vector3.down, out RaycastHit hit, 100f, manager.meleeSettings.groundLayers) ? hit.distance : 0f;           

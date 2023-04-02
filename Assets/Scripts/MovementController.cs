@@ -184,10 +184,10 @@ public class MovementController : MonoBehaviour
             movement.z = movementInput.y;
         }
 
-        if (playerInput.move.magnitude >= 0.1f && !isMovementLocked && !isStrafing) {
+        if (playerInput.move.magnitude >= 0.1f) {
             //Calculate and set rotation with camera and movement
             Quaternion targetRotation = Quaternion.Euler(0, Mathf.Atan2(movement.x, movement.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y, 0);
-            if(rotateOnMove)
+            if(rotateOnMove && !isMovementLocked && !isStrafing)
             {
             transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationFactorPerFrame * Time.deltaTime);
             }
@@ -208,22 +208,17 @@ public class MovementController : MonoBehaviour
             //Set animation layer weight to 1
 			animator.SetLayerWeight(1, 1);
 
-            //Get camera forward and right vectors
-			Vector3 forward = cameraTransform.forward;
-			Vector3 right = cameraTransform.right;
-			forward.y = 0;
-			right.y = 0;
-			forward.Normalize();
-			right.Normalize();
-
-            //Set movement direction to where the player is facing
-			Vector3 dir = (forward * playerInput.move.y + right * playerInput.move.x).normalized;
+			Vector3 dir = CalculateInputVector();
             moveDirection.x = dir.x;
             moveDirection.z = dir.z;
 
+            //Normalize movement input
+            Vector2 strafeInput = new Vector2(playerInput.move.x, playerInput.move.y).normalized;
+
+
             //Set animation values
-			animator.SetFloat(isHorizontalMovementHash, playerInput.move.x, 0.1f, Time.deltaTime);
-			animator.SetFloat(isVerticalMovementHash, playerInput.move.y, 0.1f, Time.deltaTime);
+			animator.SetFloat(isHorizontalMovementHash, strafeInput.x, 0.1f, Time.deltaTime);
+			animator.SetFloat(isVerticalMovementHash, strafeInput.y, 0.1f, Time.deltaTime);
 
             //Set strafe speed
             targetSpeed = strafeSpeed;
@@ -248,15 +243,15 @@ public class MovementController : MonoBehaviour
         moveDirection.x = 0;
         moveDirection.z = 0;
 
-        movementInput.x = 0;
-        movementInput.y = 0;
+        //Set movementInput to 0
+        movementInput = Vector2.zero;
 
         isMovementLocked = true;
     }
 
     public void EnableMovement()
     {
-        //Enable movement and check for movement input
+        //Enable movement
         isMovementLocked = false;
         HandleRotation();
     }
@@ -271,11 +266,31 @@ public class MovementController : MonoBehaviour
         return characterController.isGrounded;
     }
 
+    public bool GetIsDodging()
+    {
+        return isDodging;
+    }
+
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
     {
         if (lfAngle < -360f) lfAngle += 360f;
         if (lfAngle > 360f) lfAngle -= 360f;
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
+    }
+
+    private Vector3 CalculateInputVector()
+    {
+        //Get camera forward and right vectors
+        Vector3 forward = cameraTransform.forward;
+        Vector3 right = cameraTransform.right;
+        forward.y = 0;
+        right.y = 0;
+        forward.Normalize();
+        right.Normalize();
+
+        //Set movement direction to where the player is facing
+        Vector3 dir = (forward * playerInput.move.y + right * playerInput.move.x).normalized;
+        return dir;
     }
 
     public void SetRotateOnMove(bool newRotateOnMove)
@@ -314,21 +329,27 @@ public class MovementController : MonoBehaviour
 
     IEnumerator Dodge()
     {
-        //Disable movement and set dodge animation
+        //Disable movement
         DisableMovement();
-        animator.SetBool(isDodgingHash, true);
 
         //Set invulnerability
         playerStatsSystem.SetIsVunerable(false);
 
+        //Set dodge animation to true
+        animator.SetBool(isDodgingHash, true);
+
         float timer = 0f;
 
-        //Move player forward
+        Vector3 dodgeDirection = CalculateInputVector() + (Vector3.up * moveDirection.y);
+
+        //Set rotation to dodge direction
+        transform.rotation= Quaternion.Euler(0, Mathf.Atan2(playerInput.move.x, playerInput.move.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y, 0);
+
         while (timer < dodgeTimer)
         {
+            characterController.Move(dodgeDirection * dodgeDistance * Time.deltaTime);
             timer += Time.deltaTime;
-            Vector3 dodgeDirection = (transform.forward * dodgeDistance) + (Vector3.up * moveDirection.y);
-            characterController.Move(dodgeDirection * Time.deltaTime);
+
             yield return null;
         }
         //Set dodge animation to false and enable movement
@@ -338,7 +359,6 @@ public class MovementController : MonoBehaviour
 
         //Set invulnerability to false
         playerStatsSystem.SetIsVunerable(true);
-
     }
 
     void HandleAnimation()
@@ -367,7 +387,7 @@ public class MovementController : MonoBehaviour
         HandleAnimation();
         
         //Move CharacterController
-        characterController.Move(new Vector3(moveDirection.x * targetSpeed, moveDirection.y, moveDirection.z * targetSpeed) * Time.deltaTime);
+        if (!isMovementLocked) characterController.Move(new Vector3(moveDirection.x * targetSpeed, moveDirection.y, moveDirection.z * targetSpeed) * Time.deltaTime);
 
         HandleGravity();
         HandleJump();

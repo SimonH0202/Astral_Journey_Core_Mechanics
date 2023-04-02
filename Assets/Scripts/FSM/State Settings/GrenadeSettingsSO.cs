@@ -17,5 +17,7 @@ public class GrenadeSettingsSO : ScriptableObject
     [Header("Visual Settings")]
     public int linePoints = 25;
     public float timeBetweenPoints = 0.1f;
+
+    [Header("Explosion Settings")]
     public LayerMask GrenadeCollisionMask;
 }
