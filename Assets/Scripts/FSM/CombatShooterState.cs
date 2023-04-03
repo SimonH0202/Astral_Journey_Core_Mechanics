@@ -15,14 +15,13 @@ public class CombatShooterState : CombatBaseState
     //Private Shooter varibles
     GameObject projectile;
     bool isAttacking = false;
-    bool isAutoAiming = false;
     float currentDamage;
-
+    float elapsedTime = 0.0f;
 
     //Animation hashes
     int isAimingHash;
 
-    public float elapsedTime = 0.0f;
+
 
     public override void EnterState(CombatStateManager manager)
     {
@@ -46,7 +45,6 @@ public class CombatShooterState : CombatBaseState
     public override void UpdateState(CombatStateManager manager)
     {
         Aim(manager);
-        //AutoAimFire(manager); !isn't working yet
     }
 
     private void Aim(CombatStateManager manager)
@@ -110,16 +108,13 @@ public class CombatShooterState : CombatBaseState
             elapsedTime = 0.0f;
             currentDamage = manager.ShooterSettings.StartDamage;
 
-            if (!isAutoAiming)
-            {
-                //Reset animation layer weight and aim rig weight
-                animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
-                manager.AimRig.weight = Mathf.Lerp(manager.AimRig.weight, 0f, Time.deltaTime * 10f);
+            //Reset animation layer weight and aim rig weight
+            animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
+            manager.AimRig.weight = Mathf.Lerp(manager.AimRig.weight, 0f, Time.deltaTime * 10f);
 
-                //Reset movement
-                movementController.RotateOnMove = true;
-                movementController.IsStrafing = false;
-            }
+            //Reset movement
+            movementController.RotateOnMove = true;
+            movementController.IsStrafing = false;
         }
     }
 
@@ -148,109 +143,14 @@ public class CombatShooterState : CombatBaseState
             playerInput.attack = false;
                  
             //Reset attack bool after delay
-            manager.StartCoroutine(ShootDelay(manager, manager.ShooterSettings.ShootingCooldown));
+            manager.StartCoroutine(ShootDelay(manager.ShooterSettings.ShootingCooldown));
         } 
     }
 
-    private void AutoAimFire(CombatStateManager manager)
-    {
-        Transform target = null;
-
-        if (!playerInput.grenadeAim)
-        {
-            //Get target
-            target = SetTarget(manager);
-            if(target != null) manager.ArmAimPoint.position = target.position;
-        }
-
-        if (playerInput.attack && !isAttacking && !playerInput.grenadeAim)
-        {
-            //Set bools
-            isAttacking = true;
-
-            //Set target
-            if (target != null)
-            {
-
-                if (!isAutoAiming) {
-                    //Set aim rig weight, aim point and animation layer weight
-                    manager.AimRig.weight = 1f;
-                    animator.SetLayerWeight(3, 1f);
-
-                    //Set strafe speed
-                    movementController.StrafeSpeed = 8f;
-
-                    //Set strafe bool and rotate on move bool
-                    movementController.IsStrafing = true;
-                    movementController.RotateOnMove = false;
-
-                    //Set auto aim bool
-                    isAutoAiming = true;
-                }
-
-                if (target.TryGetComponent(out EnemyAI enemyAI))
-                {
-                    //Hit target
-                    enemyAI.TakeDamage(manager.ShooterSettings.HipFireDamage);
-                }
-            }
-
-            //Reset input
-            playerInput.attack = false;
-
-            //Reset attack bool after delay
-            manager.StartCoroutine(ShootDelay(manager, manager.ShooterSettings.HipFireCooldown));
-
-            //Reset auto aim bool after delay
-            manager.StartCoroutine(AutoAimDelay(manager));
-
-        }
-    }
-
-    public Transform SetTarget(CombatStateManager manager)
-    {
-        Transform target = null;
-
-        var forward = cameraTransform.forward;
-        var right = cameraTransform.right;
-
-        forward.y = 0f;
-        right.y = 0f;
-
-        forward.Normalize();
-        right.Normalize();
-
-        Vector3 inputDirection = forward + right;
-        inputDirection = inputDirection.normalized;
-
-        RaycastHit info;
-
-        if (Physics.SphereCast(manager.transform.position, 3f, inputDirection, out info, 15, manager.MeleeSettings.EnemyLayers))
-        {
-            target = info.collider.transform;
-            return target;
-        }
-        else return null;
-    }
-
-    private IEnumerator ShootDelay(CombatStateManager manager, float delay = 0.5f) 
+    private IEnumerator ShootDelay(float delay = 0.5f) 
     {
         yield return new WaitForSeconds(delay);
         isAttacking = false;
-    }
-
-    private IEnumerator AutoAimDelay(CombatStateManager manager, float delay = 3f) 
-    {
-        yield return new WaitForSeconds(delay);
-        isAutoAiming = false;
-
-        //Reset aim rig weight and animation layer weight
-        manager.AimRig.weight = 0;
-        animator.SetLayerWeight(3, 0f);
-
-        //Reset strafe bool and rotate on move bool
-        movementController.IsStrafing = false;
-        movementController.RotateOnMove = true;
     }
 
     public override void ExitState(CombatStateManager manager)

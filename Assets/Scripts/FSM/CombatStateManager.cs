@@ -39,8 +39,6 @@ public class CombatStateManager : MonoBehaviour
     //General Animation variables
     [SerializeField] private Transform armAimPoint;
     [SerializeField] private Rig aimRig;
-  
-
  
     
     // Start is called before the first frame update
