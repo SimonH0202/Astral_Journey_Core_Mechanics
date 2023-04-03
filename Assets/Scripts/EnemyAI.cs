@@ -8,7 +8,7 @@ public class EnemyAI : MonoBehaviour
     
     //Editor Enemy Settings
     [SerializeField] private Transform[] patrolPoints;
-    [SerializeField] public List<EnemyAI> fellowAI;
+    [SerializeField] private List<EnemyAI> fellowAI;
     [SerializeField] private Transform[] chaseSpots;
 
     [Header("Enemy Stats")]
@@ -130,7 +130,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (hit && patrolling)
         {
-            //Follow player
+            //Follow player if hit
             FollowPlayer();
 
             //Start timer to stop following
@@ -153,6 +153,10 @@ public class EnemyAI : MonoBehaviour
 
         for(int i = 0; i < fellowAI.Count; i++)
         {
+            //Set all fellow AI to follow player on death
+            fellowAI[i].FollowPlayer();
+
+            //Remove this enemy from fellow AI list
             fellowAI[i].fellowAI.Remove(this);
         }
 
@@ -221,7 +225,7 @@ public class EnemyAI : MonoBehaviour
         int k = 0;
         for(int i = 0; i < fellowAI.Count; i++)
         {
-            fellowAI[i].SetPatrolling(false);
+            fellowAI[i].patrolling = false;
             fellowAI[i].agent.speed = 7.5f;
             fellowAI[i].agent.destination = chaseSpots[k].position;
             k++;
@@ -279,15 +283,7 @@ public class EnemyAI : MonoBehaviour
         agent.destination = patrolPoints[currentPoint].transform.position;
     }
     
-    public bool GetPatrolling()
-    {
-        return patrolling;
-    }
-
-    public void SetPatrolling(bool b)
-    {
-        patrolling = b;
-    }  
+    public bool Patrolling { get; set; }
 
     void OnDrawGizmos()
     {

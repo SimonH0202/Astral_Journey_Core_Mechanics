@@ -41,32 +41,33 @@ public class MovementController : MonoBehaviour
 
     [Header("Jump Settings")]
     //Public Jump variables
-    public float maxJumpHeight = 2f;
-    public float maxJumpTime = 0.5f;
+    [SerializeField] private float maxJumpHeight= 2f;
+
+    [SerializeField] private float maxJumpTime = 0.5f;
 
     [Header("Cinemachine")]
-    public GameObject cinemachineCameraTarget;  
-    public float topClamp = 70.0f;
-    public float bottomClamp = -30.0f;
-    public float cameraAngleOverride = 0.0f;
-    public bool lockCameraPosition = false;
+    [SerializeField] private GameObject cinemachineCameraTarget;  
+    [SerializeField] private float topClamp = 70.0f;
+    [SerializeField] private float bottomClamp = -30.0f;
+    [SerializeField] private float cameraAngleOverride = 0.0f;
+    [SerializeField] private bool lockCameraPosition = false;
 
     [Header("Movement Settings")]
     //Public Movement variables
-    public float movementSpeed = 2.5f;
-    public float runSpeed = 8f;
-    public float strafeSpeed = 4f;
-    public float rotationFactorPerFrame = 15.0f;
+    [SerializeField] private float movementSpeed = 2.5f;
+    [SerializeField] private float runSpeed = 8f;
+    [SerializeField] private float strafeSpeed = 4f;
+    [SerializeField] private float rotationFactorPerFrame = 15.0f;
 
     [Header("Dodge Settings")]
     //Public Dodge variables
-    public float dodgeDistance = 10f;
-    public float dodgeTimer = 0.5f;
+    [SerializeField] private float dodgeDistance = 10f;
+    [SerializeField] private float dodgeTimer = 0.5f;
 
     [Space]
     [Header("Physics Settings")]
     //public Physics variables
-    public float gravity = -9.81f;
+    [SerializeField] private float gravity = -9.81f;
 
     //Animation Hashes
     int isWalkingHash;
@@ -109,14 +110,30 @@ public class MovementController : MonoBehaviour
         targetSpeed = movementSpeed;
     }
 
-    void SetupJumpVariables()
+    void Update()
     {
-        //Calculate jump variables based on jump height and time
-        float timeToApex = maxJumpTime / 2;
-        gravity = (-2 * maxJumpHeight) / Mathf.Pow(timeToApex, 2);
-        initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
+        //Check for mouse and keyboard or controller
+        isCurrentDeviceMouse = input.currentControlScheme == "MouseKeyboard";
+
+        HandleRotation();
+        HandleStrafeMovement();
+        HandleRun();
+        HandleDodge();
+        HandleAnimation();
+        
+        //Move CharacterController
+        if (!isMovementLocked) characterController.Move(new Vector3(moveDirection.x * targetSpeed, moveDirection.y, moveDirection.z * targetSpeed) * Time.deltaTime);
+
+        HandleGravity();
+        HandleJump();
     }
 
+    void LateUpdate()
+    {
+        HandleCameraRotation();
+    }
+
+    //Handle Methods
     private void HandleCameraRotation()
     {
         //Handle Camera Rotation
@@ -237,77 +254,6 @@ public class MovementController : MonoBehaviour
         }    
     }
 
-    public void DisableMovement()
-    {
-        //Set movement to 0 and disable movement
-        moveDirection.x = 0;
-        moveDirection.z = 0;
-
-        //Set movementInput to 0
-        movementInput = Vector2.zero;
-
-        isMovementLocked = true;
-    }
-
-    public void EnableMovement()
-    {
-        //Enable movement
-        isMovementLocked = false;
-        HandleRotation();
-    }
-
-    public bool GetIsJumping() 
-    {
-        return isJumping;
-    }
-
-    public bool GetIsGrounded()
-    {
-        return characterController.isGrounded;
-    }
-
-    public bool GetIsDodging()
-    {
-        return isDodging;
-    }
-
-    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
-    {
-        if (lfAngle < -360f) lfAngle += 360f;
-        if (lfAngle > 360f) lfAngle -= 360f;
-        return Mathf.Clamp(lfAngle, lfMin, lfMax);
-    }
-
-    private Vector3 CalculateInputVector()
-    {
-        //Get camera forward and right vectors
-        Vector3 forward = cameraTransform.forward;
-        Vector3 right = cameraTransform.right;
-        forward.y = 0;
-        right.y = 0;
-        forward.Normalize();
-        right.Normalize();
-
-        //Set movement direction to where the player is facing
-        Vector3 dir = (forward * playerInput.move.y + right * playerInput.move.x).normalized;
-        return dir;
-    }
-
-    public void SetRotateOnMove(bool newRotateOnMove)
-    {
-        rotateOnMove = newRotateOnMove;
-    }
-
-    public void SetStrafing(bool newStrafing)
-    {
-        isStrafing = newStrafing;
-    }
-
-    public void SetSensitiviy(float newSensitivity)
-    {
-        sensitivity = newSensitivity;
-    }
-
     void HandleGravity()
     {
         //Set y direction to 0 if grounded
@@ -327,6 +273,21 @@ public class MovementController : MonoBehaviour
         }
     }
 
+    void HandleAnimation()
+    {
+        bool isWalking = animator.GetBool(isWalkingHash);
+        bool isRunning = animator.GetBool(isRunningHash);
+
+        //Handle Walking
+        if (playerInput.move.magnitude >= 0.1f && !isWalking) animator.SetBool(isWalkingHash, true);
+        else if (!(playerInput.move.magnitude >= 0.1f) && isWalking) animator.SetBool(isWalkingHash, false);
+
+        //Handle Running
+        if (playerInput.move.magnitude >= 0.1f && playerInput.sprint && !isRunning) animator.SetBool(isRunningHash, true);
+        else if (!(playerInput.move.magnitude >= 0.1f) || !playerInput.sprint) animator.SetBool(isRunningHash, false);
+    }
+
+    //Coroutine for dodging
     IEnumerator Dodge()
     {
         //Disable movement
@@ -361,40 +322,65 @@ public class MovementController : MonoBehaviour
         playerStatsSystem.SetIsVunerable(true);
     }
 
-    void HandleAnimation()
+    //General Methods
+    void SetupJumpVariables()
     {
-        bool isWalking = animator.GetBool(isWalkingHash);
-        bool isRunning = animator.GetBool(isRunningHash);
-
-        //Handle Walking
-        if (playerInput.move.magnitude >= 0.1f && !isWalking) animator.SetBool(isWalkingHash, true);
-        else if (!(playerInput.move.magnitude >= 0.1f) && isWalking) animator.SetBool(isWalkingHash, false);
-
-        //Handle Running
-        if (playerInput.move.magnitude >= 0.1f && playerInput.sprint && !isRunning) animator.SetBool(isRunningHash, true);
-        else if (!(playerInput.move.magnitude >= 0.1f) || !playerInput.sprint) animator.SetBool(isRunningHash, false);
+        //Calculate jump variables based on jump height and time
+        float timeToApex = maxJumpTime / 2;
+        gravity = (-2 * maxJumpHeight) / Mathf.Pow(timeToApex, 2);
+        initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
     }
 
-    void Update()
+    public void DisableMovement()
     {
-        //Check for mouse and keyboard or controller
-        isCurrentDeviceMouse = input.currentControlScheme == "MouseKeyboard";
+        //Set movement to 0 and disable movement
+        moveDirection.x = 0;
+        moveDirection.z = 0;
 
+        //Set movementInput to 0
+        movementInput = Vector2.zero;
+
+        isMovementLocked = true;
+    }
+
+    public void EnableMovement()
+    {
+        //Enable movement
+        isMovementLocked = false;
         HandleRotation();
-        HandleStrafeMovement();
-        HandleRun();
-        HandleDodge();
-        HandleAnimation();
-        
-        //Move CharacterController
-        if (!isMovementLocked) characterController.Move(new Vector3(moveDirection.x * targetSpeed, moveDirection.y, moveDirection.z * targetSpeed) * Time.deltaTime);
-
-        HandleGravity();
-        HandleJump();
     }
 
-    void LateUpdate()
+    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
     {
-        HandleCameraRotation();
+        if (lfAngle < -360f) lfAngle += 360f;
+        if (lfAngle > 360f) lfAngle -= 360f;
+        return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
+
+    private Vector3 CalculateInputVector()
+    {
+        //Get camera forward and right vectors
+        Vector3 forward = cameraTransform.forward;
+        Vector3 right = cameraTransform.right;
+        forward.y = 0;
+        right.y = 0;
+        forward.Normalize();
+        right.Normalize();
+
+        //Set movement direction to where the player is facing
+        Vector3 dir = (forward * playerInput.move.y + right * playerInput.move.x).normalized;
+        return dir;
+    }
+
+    //Setter
+    public bool RotateOnMove { set => rotateOnMove = value; }
+    public bool IsMovementLocked { set => isMovementLocked = value; }
+    public float Sensitivity { set => sensitivity = value; }
+    public bool IsStrafing { set => isStrafing = value; }
+    public float StrafeSpeed { set => strafeSpeed = value; }
+
+    //Getter
+    public bool IsJumping { get => isJumping; }
+    public bool IsDodging { get => isDodging; }
+    public bool IsGrounded { get => characterController.isGrounded; }
 }

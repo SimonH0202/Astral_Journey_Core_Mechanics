@@ -44,8 +44,8 @@ public class CombatGrenadeState : CombatBaseState
         {
             //Set up line renderer
             lineRenderer.enabled = true;
-            movementController.SetRotateOnMove(false);
-            movementController.SetStrafing(true);
+            movementController.RotateOnMove = false;
+            movementController.IsStrafing = true;
             Vector3 mouseWorldPosition = Vector3.zero;
             Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
@@ -54,14 +54,14 @@ public class CombatGrenadeState : CombatBaseState
                 mouseWorldPosition = raycastHit.point;
             }
             //Set weight of aim rig
-            manager.aimRig.weight = Mathf.Lerp(manager.aimRig.weight, 1f, Time.deltaTime * 10f);
+            manager.AimRig.weight = Mathf.Lerp(manager.AimRig.weight, 1f, Time.deltaTime * 10f);
 
             //Aim arm towards mouseWorldPosition
-            movementController.SetSensitiviy(manager.aimSenitivity);
-            manager.armAimPoint.position = mouseWorldPosition;
+            movementController.Sensitivity = manager.AimSenitivity;
+            manager.ArmAimPoint.position = mouseWorldPosition;
 
             //Activate aim camera
-            manager.aimVirtualCamera.gameObject.SetActive(true);
+            manager.AimVirtualCamera.gameObject.SetActive(true);
 
             //Rotate player to face mouse
             Vector3 worldAimTarget = mouseWorldPosition;
@@ -80,16 +80,16 @@ public class CombatGrenadeState : CombatBaseState
         if(!playerInput.grenadeAim)
         {
             //Reset movement, grenade, camera and line renderer
-            movementController.SetRotateOnMove(true);
-            movementController.SetStrafing(false);
+            movementController.RotateOnMove = true;
+            movementController.IsStrafing = false;
             lineRenderer.enabled = false;
-            manager.aimVirtualCamera.gameObject.SetActive(false);
+            manager.AimVirtualCamera.gameObject.SetActive(false);
 
             //Set animation layer weight
             animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
 
             //Set weight of aim rig
-            manager.aimRig.weight = Mathf.Lerp(manager.aimRig.weight, 0f, Time.deltaTime * 10f);
+            manager.AimRig.weight = Mathf.Lerp(manager.AimRig.weight, 0f, Time.deltaTime * 10f);
         }
     }
 
@@ -101,11 +101,11 @@ public class CombatGrenadeState : CombatBaseState
             isAttacking = true;
 
             //Instantiate grenade
-            grenade = GameObject.Instantiate(manager.grenadeSettings.grenadePrefab, lineRenderer.transform.position, manager.transform.rotation);
+            grenade = GameObject.Instantiate(manager.GrenadeSettings.GrenadePrefab, lineRenderer.transform.position, manager.transform.rotation);
 
             //Set velocity
             Rigidbody grenadeRb = grenade.GetComponent<Rigidbody>();
-            grenadeRb.velocity = manager.grenadeSettings.throwForce * Camera.main.transform.forward;
+            grenadeRb.velocity = manager.GrenadeSettings.ThrowForce * Camera.main.transform.forward;
 
             playerInput.attack = false;
 
@@ -117,12 +117,12 @@ public class CombatGrenadeState : CombatBaseState
     private void DrawProjection(CombatStateManager manager)
     {
         lineRenderer.enabled = true;
-        lineRenderer.positionCount = Mathf.CeilToInt(manager.grenadeSettings.linePoints / manager.grenadeSettings.timeBetweenPoints) + 1;
+        lineRenderer.positionCount = Mathf.CeilToInt(manager.GrenadeSettings.LinePoints / manager.GrenadeSettings.TimeBetweenPoints) + 1;
         Vector3 startPosition = lineRenderer.transform.position;
-        Vector3 startVelocity = manager.grenadeSettings.throwForce * Camera.main.transform.forward;
+        Vector3 startVelocity = manager.GrenadeSettings.ThrowForce * Camera.main.transform.forward;
         int i = 0;
         lineRenderer.SetPosition(i, startPosition);
-        for (float time = 0; time < manager.grenadeSettings.linePoints; time += manager.grenadeSettings.timeBetweenPoints)
+        for (float time = 0; time < manager.GrenadeSettings.LinePoints; time += manager.GrenadeSettings.TimeBetweenPoints)
         {
             i++;
             Vector3 point = startPosition + time * startVelocity;
@@ -131,7 +131,7 @@ public class CombatGrenadeState : CombatBaseState
             lineRenderer.SetPosition(i, point);
 
             //Max distance reached, change color of line renderer
-            if (Vector3.Distance(startPosition, point) > manager.grenadeSettings.maxDistance)
+            if (Vector3.Distance(startPosition, point) > manager.GrenadeSettings.MaxDistance)
             {
                 lineRenderer.material.SetColor("_EmissionColor", Color.red);
                 maxDistanceReached = true;
@@ -153,7 +153,7 @@ public class CombatGrenadeState : CombatBaseState
                 (point - lastPosition).normalized, 
                 out RaycastHit hit,
                 (point - lastPosition).magnitude,
-                manager.grenadeSettings.GrenadeCollisionMask))
+                manager.GrenadeSettings.GrenadeCollisionMask1))
             {
                 lineRenderer.SetPosition(i, hit.point);
                 lineRenderer.positionCount = i + 1;
@@ -164,12 +164,22 @@ public class CombatGrenadeState : CombatBaseState
 
     private IEnumerator ThrowGrenadeDelay(CombatStateManager manager)
     {
-        yield return new WaitForSeconds(manager.grenadeSettings.grenadeCooldown);
+        yield return new WaitForSeconds(manager.GrenadeSettings.GrenadeCooldown);
         isAttacking = false;
     }
 
     public override void ExitState(CombatStateManager manager)
     {
+        //Reset movement, projectile, crosshair, camera, line renderer, elapsed time and current damage
+        movementController.RotateOnMove = true;
+        movementController.IsStrafing = false;
         lineRenderer.enabled = false;
+        manager.AimVirtualCamera.gameObject.SetActive(false);
+
+        //Set animation layer weight
+        animator.SetLayerWeight(3, 0f);
+
+        //Set weight of aim rig
+        manager.AimRig.weight = 0f;
     }
 }

@@ -17,32 +17,28 @@ public class CombatStateManager : MonoBehaviour
     [Header("Melee State")]
     [Space(10)]
     //Melee State variables
-    public GameObject meleeWeapon;
-    public MeleeSettingsSO meleeSettings;
+    [SerializeField] private GameObject meleeWeapon;
+    [SerializeField] private MeleeSettingsSO meleeSettings;
 
     [Header("Grenade State")]
     [Space(10)]
     //Grenade State variables
-    public GrenadeSettingsSO grenadeSettings;
+    [SerializeField] private GrenadeSettingsSO grenadeSettings;
 
     [Header("Shooter State")]
     [Space(10)]
     //Shooter State variables
-    public GameObject crosshair;
-    public ShooterSettingsSO shooterSettings;
-    public float currentDamage = 5f;
-    public int targetDamage = 50;
-    public float chargeUpTime = 5.0f;
-    
+    [SerializeField] private GameObject crosshair;
+    [SerializeField] private ShooterSettingsSO shooterSettings;
 
     [Header("Cinemachine")]
-    public CinemachineVirtualCamera aimVirtualCamera;
-    public float aimSenitivity = 0.5f;
+    [SerializeField] private CinemachineVirtualCamera aimVirtualCamera;
+    [SerializeField] private float aimSenitivity = 0.5f;
 
     [Header("General Animation Settings")]
     //General Animation variables
-    public Transform armAimPoint;
-    public Rig aimRig;
+    [SerializeField] private Transform armAimPoint;
+    [SerializeField] private Rig aimRig;
   
 
  
@@ -91,4 +87,15 @@ public class CombatStateManager : MonoBehaviour
         currentState = newState;
         currentState.EnterState(this);
     }
+
+    //Getters
+    public GameObject MeleeWeapon { get { return meleeWeapon; } }
+    public MeleeSettingsSO MeleeSettings { get { return meleeSettings; } }
+    public GrenadeSettingsSO GrenadeSettings { get { return grenadeSettings; } }
+    public ShooterSettingsSO ShooterSettings { get { return shooterSettings; } }
+    public Transform ArmAimPoint { get { return armAimPoint; } }
+    public Rig AimRig { get { return aimRig; } }
+    public CinemachineVirtualCamera AimVirtualCamera { get { return aimVirtualCamera; } }
+    public float AimSenitivity { get { return aimSenitivity; } }
+    public GameObject Crosshair { get { return crosshair; } }
 }

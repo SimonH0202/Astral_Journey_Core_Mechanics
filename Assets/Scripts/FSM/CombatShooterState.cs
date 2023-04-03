@@ -10,10 +10,14 @@ public class CombatShooterState : CombatBaseState
     Animator animator;
     MovementController movementController;
     Transform aimPoint;
+    Transform cameraTransform;
 
     //Private Shooter varibles
     GameObject projectile;
     bool isAttacking = false;
+    bool isAutoAiming = false;
+    float currentDamage;
+
 
     //Animation hashes
     int isAimingHash;
@@ -33,34 +37,33 @@ public class CombatShooterState : CombatBaseState
         movementController = manager.GetComponent<MovementController>();
         animator = manager.GetComponent<Animator>();
         aimPoint = manager.transform.Find("ReleasePosition");
+        cameraTransform = Camera.main.transform;
+
+        //Set initial values
+        currentDamage = manager.ShooterSettings.StartDamage;
     }
 
     public override void UpdateState(CombatStateManager manager)
     {
         Aim(manager);
+        //AutoAimFire(manager); !isn't working yet
     }
 
     private void Aim(CombatStateManager manager)
     {
         if (playerInput.grenadeAim)
         {
-            movementController.SetRotateOnMove(false);
-            movementController.SetStrafing(true);
+            movementController.RotateOnMove = false;
+            movementController.IsStrafing = true;
 
             //Charge up damage
             elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / manager.chargeUpTime);
-            manager.currentDamage = (int)Mathf.Lerp(5, manager.targetDamage, t);
+            float t = Mathf.Clamp01(elapsedTime / manager.ShooterSettings.ChargeUpTime);
+            currentDamage = (int)Mathf.Lerp(5, manager.ShooterSettings.TargetDamage, t);
 
-            //set color of crosshair to red
-            if(manager.currentDamage == manager.targetDamage)
-            {
-                manager.crosshair.GetComponent<RawImage>().color = Color.green;
-            }
-            else
-            {
-                manager.crosshair.GetComponent<RawImage>().color = Color.white;
-            }
+            //lerp color of crosshair
+            Color lerpedColor = Color.Lerp(Color.white, Color.green, t);
+            manager.Crosshair.GetComponent<RawImage>().color = lerpedColor;
 
             //Set up line renderer
             Vector3 mouseWorldPosition = Vector3.zero;
@@ -72,17 +75,17 @@ public class CombatShooterState : CombatBaseState
             }
 
             //Set weight of aim rig
-            manager.aimRig.weight = Mathf.Lerp(manager.aimRig.weight, 1f, Time.deltaTime * 10f);
+            manager.AimRig.weight = Mathf.Lerp(manager.AimRig.weight, 1f, Time.deltaTime * 10f);
 
             //Aim arm towards mouseWorldPosition
-            movementController.SetSensitiviy(manager.aimSenitivity);  
-            manager.armAimPoint.position = mouseWorldPosition;
+            movementController.Sensitivity = manager.AimSenitivity;  
+            manager.ArmAimPoint.position = mouseWorldPosition;
 
             //Activate aim camera
-            manager.aimVirtualCamera.gameObject.SetActive(true);
+            manager.AimVirtualCamera.gameObject.SetActive(true);
 
             //Activate crosshair
-            manager.crosshair.gameObject.SetActive(true);
+            manager.Crosshair.gameObject.SetActive(true);
 
             
             //Rotate player to face mouse
@@ -100,19 +103,23 @@ public class CombatShooterState : CombatBaseState
         }   
         if(!playerInput.grenadeAim)
         {
-            //Reset movement, projectile, crosshair, camera, line renderer, elapsed time and current damage
-            movementController.SetRotateOnMove(true);
-            movementController.SetStrafing(false);
-            manager.aimVirtualCamera.gameObject.SetActive(false);
-            manager.crosshair.gameObject.SetActive(false);
+            //Reset, projectile, crosshair, camera, line renderer, elapsed time and current damage
+
+            manager.AimVirtualCamera.gameObject.SetActive(false);
+            manager.Crosshair.gameObject.SetActive(false);
             elapsedTime = 0.0f;
-            manager.currentDamage = 5f;
+            currentDamage = manager.ShooterSettings.StartDamage;
 
-            //Set animation layer weight
-            animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
+            if (!isAutoAiming)
+            {
+                //Reset animation layer weight and aim rig weight
+                animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
+                manager.AimRig.weight = Mathf.Lerp(manager.AimRig.weight, 0f, Time.deltaTime * 10f);
 
-            //Set weight of aim rig
-            manager.aimRig.weight = Mathf.Lerp(manager.aimRig.weight, 0f, Time.deltaTime * 10f);
+                //Reset movement
+                movementController.RotateOnMove = true;
+                movementController.IsStrafing = false;
+            }
         }
     }
 
@@ -125,35 +132,142 @@ public class CombatShooterState : CombatBaseState
 
             //Instantiate projectile
             Vector3 aimDir = (mouseWorldPosition - aimPoint.position).normalized;
-            projectile = GameObject.Instantiate(manager.shooterSettings.projectilePrefab, aimPoint.transform.position, Quaternion.LookRotation(aimDir, Vector3.up)); 
+            projectile = GameObject.Instantiate(manager.ShooterSettings.ProjectilePrefab, aimPoint.transform.position, Quaternion.LookRotation(aimDir, Vector3.up)); 
 
             //Set projectile damage
-            projectile.GetComponent<Projectile>().damage = manager.currentDamage;
-            Debug.Log("Damage: " + manager.currentDamage);
+            projectile.GetComponent<Projectile>().damage = currentDamage;
 
             //Reset damage and timer
-            manager.currentDamage = 5f;
+            currentDamage = manager.ShooterSettings.StartDamage;
             elapsedTime = 0.0f;
 
             //Set velocity
             Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
-            projectileRb.velocity = manager.shooterSettings.projectileSpeed * manager.transform.forward;
+            projectileRb.velocity = manager.ShooterSettings.ProjectileSpeed * manager.transform.forward;
 
             playerInput.attack = false;
                  
             //Reset attack bool after delay
-            manager.StartCoroutine(ShootDelay(manager));
+            manager.StartCoroutine(ShootDelay(manager, manager.ShooterSettings.ShootingCooldown));
         } 
     }
 
-    private IEnumerator ShootDelay(CombatStateManager manager)
+    private void AutoAimFire(CombatStateManager manager)
     {
-        yield return new WaitForSeconds(manager.shooterSettings.shootingCooldown);
+        Transform target = null;
+
+        if (!playerInput.grenadeAim)
+        {
+            //Get target
+            target = SetTarget(manager);
+            if(target != null) manager.ArmAimPoint.position = target.position;
+        }
+
+        if (playerInput.attack && !isAttacking && !playerInput.grenadeAim)
+        {
+            //Set bools
+            isAttacking = true;
+
+            //Set target
+            if (target != null)
+            {
+
+                if (!isAutoAiming) {
+                    //Set aim rig weight, aim point and animation layer weight
+                    manager.AimRig.weight = 1f;
+                    animator.SetLayerWeight(3, 1f);
+
+                    //Set strafe speed
+                    movementController.StrafeSpeed = 8f;
+
+                    //Set strafe bool and rotate on move bool
+                    movementController.IsStrafing = true;
+                    movementController.RotateOnMove = false;
+
+                    //Set auto aim bool
+                    isAutoAiming = true;
+                }
+
+                if (target.TryGetComponent(out EnemyAI enemyAI))
+                {
+                    //Hit target
+                    enemyAI.TakeDamage(manager.ShooterSettings.HipFireDamage);
+                }
+            }
+
+            //Reset input
+            playerInput.attack = false;
+
+            //Reset attack bool after delay
+            manager.StartCoroutine(ShootDelay(manager, manager.ShooterSettings.HipFireCooldown));
+
+            //Reset auto aim bool after delay
+            manager.StartCoroutine(AutoAimDelay(manager));
+
+        }
+    }
+
+    public Transform SetTarget(CombatStateManager manager)
+    {
+        Transform target = null;
+
+        var forward = cameraTransform.forward;
+        var right = cameraTransform.right;
+
+        forward.y = 0f;
+        right.y = 0f;
+
+        forward.Normalize();
+        right.Normalize();
+
+        Vector3 inputDirection = forward + right;
+        inputDirection = inputDirection.normalized;
+
+        RaycastHit info;
+
+        if (Physics.SphereCast(manager.transform.position, 3f, inputDirection, out info, 15, manager.MeleeSettings.EnemyLayers))
+        {
+            target = info.collider.transform;
+            return target;
+        }
+        else return null;
+    }
+
+    private IEnumerator ShootDelay(CombatStateManager manager, float delay = 0.5f) 
+    {
+        yield return new WaitForSeconds(delay);
         isAttacking = false;
+    }
+
+    private IEnumerator AutoAimDelay(CombatStateManager manager, float delay = 3f) 
+    {
+        yield return new WaitForSeconds(delay);
+        isAutoAiming = false;
+
+        //Reset aim rig weight and animation layer weight
+        manager.AimRig.weight = 0;
+        animator.SetLayerWeight(3, 0f);
+
+        //Reset strafe bool and rotate on move bool
+        movementController.IsStrafing = false;
+        movementController.RotateOnMove = true;
     }
 
     public override void ExitState(CombatStateManager manager)
     {
+        //Reset movement, crosshair, camera, elapsed time and current damage
+        movementController.RotateOnMove = true;
+        movementController.IsStrafing = false;
+        manager.AimVirtualCamera.gameObject.SetActive(false);
+        manager.Crosshair.gameObject.SetActive(false);
+        elapsedTime = 0.0f;
+        currentDamage = manager.ShooterSettings.StartDamage;
+
+        //Set animation layer weight
+        animator.SetLayerWeight(3, 0f);
+
+        //Set weight of aim rig
+        manager.AimRig.weight = 0;
     }
 }
 

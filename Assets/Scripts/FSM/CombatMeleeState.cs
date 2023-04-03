@@ -37,10 +37,10 @@ public class CombatMeleeState : CombatBaseState
         animator = manager.GetComponent<Animator>();
         playerInput = manager.GetComponent<PlayerInputs>();
         damagePoint = manager.transform.Find("DamagePoint");
-        weaponPoint = manager.meleeWeapon.transform.Find("WeaponPoint");
+        weaponPoint = manager.MeleeWeapon.transform.Find("WeaponPoint");
 
         //Activate weapon
-        manager.meleeWeapon.SetActive(true);
+        manager.MeleeWeapon.SetActive(true);
 
         //Get animation hashes
         isAttackingHash = Animator.StringToHash("isAttacking");
@@ -48,8 +48,8 @@ public class CombatMeleeState : CombatBaseState
         jumpAttackAnimSpeedHash = Animator.StringToHash("jumpAttackAnimSpeed");
 
         //Set up animation times
-        animator.SetFloat(attackAnimSpeedHash, manager.meleeSettings.attackAnimSpeed);
-        animator.SetFloat(jumpAttackAnimSpeedHash, manager.meleeSettings.jumpAttackAnimSpeed);
+        animator.SetFloat(attackAnimSpeedHash, manager.MeleeSettings.AttackAnimSpeed);
+        animator.SetFloat(jumpAttackAnimSpeedHash, manager.MeleeSettings.JumpAttackAnimSpeed);
     }
 
     public override void UpdateState(CombatStateManager manager)
@@ -61,18 +61,18 @@ public class CombatMeleeState : CombatBaseState
     public override void ExitState(CombatStateManager manager)
     {
         //Deactivate weapon
-        manager.meleeWeapon.SetActive(false);
+        manager.MeleeWeapon.SetActive(false);
     }
 
     void HandleAttack(CombatStateManager manager)
     {
-        if (playerInput.attack && !movementController.GetIsJumping() && !movementController.GetIsDodging() && !isAttacking && !isJumpAttacking)
+        if (playerInput.attack && !movementController.IsJumping && !movementController.IsDodging && !isAttacking && !isJumpAttacking)
         {
             //Start attack, set runtime animator controller to attack animation
             isAttacking = true;
-            animator.runtimeAnimatorController = manager.meleeSettings.Attacks[attackIndex].animatorOverride;
+            animator.runtimeAnimatorController = manager.MeleeSettings.AttacksList[attackIndex].animatorOverride;
             //Start attack coroutine
-            manager.StartCoroutine(Attack(manager.meleeSettings.Attacks, attackIndex));
+            manager.StartCoroutine(Attack(manager.MeleeSettings.AttacksList, attackIndex));
             //HandleDamage();
         }
         HandleDamageRaycast(manager);
@@ -80,19 +80,19 @@ public class CombatMeleeState : CombatBaseState
 
     void HandleJumpAttack(CombatStateManager manager)
     {
-        if (playerInput.attack && movementController.GetIsJumping() && !movementController.GetIsDodging() && !isAttacking && !isJumpAttacking)
+        if (playerInput.attack && movementController.IsJumping && !movementController.IsDodging && !isAttacking && !isJumpAttacking)
         {
             //Calculate jump attack damage multiplier
-            distance = Physics.Raycast(manager.transform.position, Vector3.down, out RaycastHit hit, 100f, manager.meleeSettings.groundLayers) ? hit.distance : 0f;           
-            if (distance <= manager.meleeSettings.multliplierThreshold1) jumpAttackDamageMultiplier = 1f;
-            else if (distance < manager.meleeSettings.multliplierThreshold2) jumpAttackDamageMultiplier = 1.5f;
-            else if (distance >= manager.meleeSettings.multliplierThreshold2) jumpAttackDamageMultiplier = 2f;
+            distance = Physics.Raycast(manager.transform.position, Vector3.down, out RaycastHit hit, 100f, manager.MeleeSettings.GroundLayers) ? hit.distance : 0f;           
+            if (distance <= manager.MeleeSettings.MultliplierThreshold1) jumpAttackDamageMultiplier = 1f;
+            else if (distance < manager.MeleeSettings.MultliplierThreshold2) jumpAttackDamageMultiplier = 1.5f;
+            else if (distance >= manager.MeleeSettings.MultliplierThreshold2) jumpAttackDamageMultiplier = 2f;
 
             //Start jump attack, set runtime animator controller to jump attack animation
             isJumpAttacking = true;
-            animator.runtimeAnimatorController = manager.meleeSettings.JumpAttacks[jumpAttackIndex].animatorOverride;
+            animator.runtimeAnimatorController = manager.MeleeSettings.JumpAttacksList[jumpAttackIndex].animatorOverride;
             //Start jump attack coroutine
-            manager.StartCoroutine(Attack(manager.meleeSettings.JumpAttacks, jumpAttackIndex, true));
+            manager.StartCoroutine(Attack(manager.MeleeSettings.JumpAttacksList, jumpAttackIndex, true));
         }
         HandleJumpDamage(manager);
     }
@@ -102,15 +102,15 @@ public class CombatMeleeState : CombatBaseState
     {
         if (isAttacking)
         {
-            Collider[] hitEnemies = Physics.OverlapSphere(damagePoint.position, manager.meleeSettings.damageRadius, manager.meleeSettings.enemyLayers);
+            Collider[] hitEnemies = Physics.OverlapSphere(damagePoint.position, manager.MeleeSettings.DamageRadius, manager.MeleeSettings.EnemyLayers);
             foreach (Collider enemy in hitEnemies)
             {
-                if (!damagedEnemies.Contains(enemy.gameObject) && !movementController.GetIsJumping())
+                if (!damagedEnemies.Contains(enemy.gameObject) && !movementController.IsJumping)
                 {
                     damagedEnemies.Add(enemy.gameObject);
-                    enemy.GetComponent<EnemyAI>().TakeDamage(manager.meleeSettings.Attacks[attackIndex].damage);
+                    enemy.GetComponent<EnemyAI>().TakeDamage(manager.MeleeSettings.AttacksList[attackIndex].damage);
                     attackIndex++;
-                    if (attackIndex >= manager.meleeSettings.Attacks.Count) attackIndex = 0;
+                    if (attackIndex >= manager.MeleeSettings.AttacksList.Count) attackIndex = 0;
                 }
             }
         }
@@ -124,16 +124,16 @@ public class CombatMeleeState : CombatBaseState
             RaycastHit hit;
 
             //Check for enemies hit by raycast
-            if (Physics.Raycast(weaponPoint.position, -weaponPoint.transform.up, out hit, manager.meleeSettings.weaponLength, manager.meleeSettings.enemyLayers))
+            if (Physics.Raycast(weaponPoint.position, -weaponPoint.transform.up, out hit, manager.MeleeSettings.WeaponLength, manager.MeleeSettings.EnemyLayers))
             {
-                if (!damagedEnemies.Contains(hit.transform.gameObject) && !movementController.GetIsJumping())
+                if (!damagedEnemies.Contains(hit.transform.gameObject) && !movementController.IsJumping)
                 {
                     //Damage enemy
                     damagedEnemies.Add(hit.transform.gameObject);
-                    hit.transform.GetComponent<EnemyAI>().TakeDamage(manager.meleeSettings.Attacks[attackIndex].damage);
+                    hit.transform.GetComponent<EnemyAI>().TakeDamage(manager.MeleeSettings.AttacksList[attackIndex].damage);
                     //Increment attack index
                     attackIndex++;
-                    if (attackIndex >= manager.meleeSettings.Attacks.Count) attackIndex = 0;
+                    if (attackIndex >= manager.MeleeSettings.AttacksList.Count) attackIndex = 0;
                 }
             }
         }
@@ -144,19 +144,19 @@ public class CombatMeleeState : CombatBaseState
         if (isJumpAttacking)
         {
             //Check for enemies in hit radius
-            Collider[] hitEnemies = Physics.OverlapSphere(damagePoint.position, manager.meleeSettings.jumpDamageRadius, manager.meleeSettings.enemyLayers);
+            Collider[] hitEnemies = Physics.OverlapSphere(damagePoint.position, manager.MeleeSettings.JumpDamageRadius, manager.MeleeSettings.EnemyLayers);
             foreach (Collider enemy in hitEnemies)
             {
-                if (!damagedEnemies.Contains(enemy.gameObject) && movementController.GetIsGrounded())
+                if (!damagedEnemies.Contains(enemy.gameObject) && movementController.IsGrounded)
                 {
                     //Damage enemy
                     damagedEnemies.Add(enemy.gameObject);
-                    enemy.GetComponent<EnemyAI>().TakeDamage(manager.meleeSettings.JumpAttacks[jumpAttackIndex].damage * jumpAttackDamageMultiplier);
+                    enemy.GetComponent<EnemyAI>().TakeDamage(manager.MeleeSettings.JumpAttacksList[jumpAttackIndex].damage * jumpAttackDamageMultiplier);
                     //Reset damage multiplier
                     jumpAttackDamageMultiplier = 1f;
                     //Increment jump attack index
                     jumpAttackIndex++;
-                    if (jumpAttackIndex >= manager.meleeSettings.JumpAttacks.Count) jumpAttackIndex = 0;
+                    if (jumpAttackIndex >= manager.MeleeSettings.JumpAttacksList.Count) jumpAttackIndex = 0;
                     //Reset attack variables
                     isJumpAttacking = false;
                 }
@@ -176,7 +176,7 @@ public class CombatMeleeState : CombatBaseState
         else
         {
             //Wait until player is grounded
-            while (!movementController.GetIsGrounded())
+            while (!movementController.IsGrounded)
             {
                 yield return null;
             }

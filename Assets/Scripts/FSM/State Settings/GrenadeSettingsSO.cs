@@ -7,17 +7,26 @@ using UnityEngine;
 public class GrenadeSettingsSO : ScriptableObject
 {
     [Header("Prefab")]
-    public GameObject grenadePrefab;
+    [SerializeField] private GameObject grenadePrefab;
 
     [Header("Grenade Settings")]
-    public float throwForce = 40f;
-    public float grenadeCooldown = 1f;
-    public float maxDistance = 20f;
+    [SerializeField] private float throwForce = 40f;
+    [SerializeField] private float grenadeCooldown = 1f;
+    [SerializeField] private float maxDistance = 20f;
 
     [Header("Visual Settings")]
-    public int linePoints = 25;
-    public float timeBetweenPoints = 0.1f;
+    [SerializeField] private int linePoints = 25;
+    [SerializeField] private float timeBetweenPoints = 0.1f;
 
     [Header("Explosion Settings")]
-    public LayerMask GrenadeCollisionMask;
+    [SerializeField] private LayerMask GrenadeCollisionMask;
+
+    //Getters
+    public GameObject GrenadePrefab { get { return grenadePrefab; } }
+    public float ThrowForce { get { return throwForce; } }
+    public float GrenadeCooldown { get { return grenadeCooldown; } }
+    public float MaxDistance { get { return maxDistance; } }
+    public int LinePoints { get { return linePoints; } }
+    public float TimeBetweenPoints { get { return timeBetweenPoints; } }
+    public LayerMask GrenadeCollisionMask1 { get { return GrenadeCollisionMask; } }
 }
