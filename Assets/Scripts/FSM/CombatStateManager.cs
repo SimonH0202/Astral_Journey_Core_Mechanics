@@ -30,6 +30,10 @@ public class CombatStateManager : MonoBehaviour
     //Shooter State variables
     public GameObject crosshair;
     public ShooterSettingsSO shooterSettings;
+    public float currentDamage = 5f;
+    public int targetDamage = 50;
+    public float chargeUpTime = 5.0f;
+    
 
     [Header("Cinemachine")]
     public CinemachineVirtualCamera aimVirtualCamera;

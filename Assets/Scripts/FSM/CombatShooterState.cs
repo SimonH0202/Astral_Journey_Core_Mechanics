@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CombatShooterState : CombatBaseState
 {
@@ -16,6 +17,8 @@ public class CombatShooterState : CombatBaseState
 
     //Animation hashes
     int isAimingHash;
+
+    public float elapsedTime = 0.0f;
 
     public override void EnterState(CombatStateManager manager)
     {
@@ -43,6 +46,21 @@ public class CombatShooterState : CombatBaseState
         {
             movementController.SetRotateOnMove(false);
             movementController.SetStrafing(true);
+
+            //Charge up damage
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / manager.chargeUpTime);
+            manager.currentDamage = (int)Mathf.Lerp(5, manager.targetDamage, t);
+
+            //set color of crosshair to red
+            if(manager.currentDamage == manager.targetDamage)
+            {
+                manager.crosshair.GetComponent<RawImage>().color = Color.green;
+            }
+            else
+            {
+                manager.crosshair.GetComponent<RawImage>().color = Color.white;
+            }
 
             //Set up line renderer
             Vector3 mouseWorldPosition = Vector3.zero;
@@ -82,11 +100,13 @@ public class CombatShooterState : CombatBaseState
         }   
         if(!playerInput.grenadeAim)
         {
-            //Reset movement, projectile,crosshair, camera and line renderer
+            //Reset movement, projectile, crosshair, camera, line renderer, elapsed time and current damage
             movementController.SetRotateOnMove(true);
             movementController.SetStrafing(false);
             manager.aimVirtualCamera.gameObject.SetActive(false);
             manager.crosshair.gameObject.SetActive(false);
+            elapsedTime = 0.0f;
+            manager.currentDamage = 5f;
 
             //Set animation layer weight
             animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
@@ -106,6 +126,14 @@ public class CombatShooterState : CombatBaseState
             //Instantiate projectile
             Vector3 aimDir = (mouseWorldPosition - aimPoint.position).normalized;
             projectile = GameObject.Instantiate(manager.shooterSettings.projectilePrefab, aimPoint.transform.position, Quaternion.LookRotation(aimDir, Vector3.up)); 
+
+            //Set projectile damage
+            projectile.GetComponent<Projectile>().damage = manager.currentDamage;
+            Debug.Log("Damage: " + manager.currentDamage);
+
+            //Reset damage and timer
+            manager.currentDamage = 5f;
+            elapsedTime = 0.0f;
 
             //Set velocity
             Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();

@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] float projectileDmg = 20f;
-    [SerializeField] float projectileRange = 100f;
-
-    [SerializeField] float projectileSpeed = 100f;
+    public float damage;
+    [SerializeField] float range = 100f;
+    [SerializeField] float speed = 100f;
 
     Vector3 originPosition;
    
@@ -18,13 +17,13 @@ public class Projectile : MonoBehaviour
 
         //Set velocity
         Rigidbody projectileRb = GetComponent<Rigidbody>();
-        projectileRb.velocity = projectileSpeed * transform.forward;
+        projectileRb.velocity = speed * transform.forward;
     }
 
     void Update()
     {
         float distance = Vector3.Distance(originPosition, transform.position);
-         if(distance > projectileRange)
+         if(distance > range)
             {
                 Destroy(gameObject);
             }
@@ -36,7 +35,7 @@ public class Projectile : MonoBehaviour
         if(other.GetComponent<EnemyAI>() != null)
         {
             Destroy(gameObject);
-            other.GetComponent<EnemyAI>().TakeDamage(projectileDmg);
+            other.GetComponent<EnemyAI>().TakeDamage(damage);
         }
         else if(other.GetComponent<EnemyAI>() == null)
         {
