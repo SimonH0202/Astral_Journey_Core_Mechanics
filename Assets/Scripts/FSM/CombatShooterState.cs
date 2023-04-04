@@ -160,15 +160,19 @@ public class CombatShooterState : CombatBaseState
             manager.ArmAimPoint.position = Vector3.Lerp(manager.ArmAimPoint.position, target.position, Time.deltaTime * 10f);
         }
 
+        //Lerp rig and animation layer weight to 1 if is attacking
+        if (isAttacking)
+        {
+            manager.HipFireRig.weight = Mathf.Lerp(manager.HipFireRig.weight, 1f, Time.deltaTime * 10f);
+            animator.SetLayerWeight(4, Mathf.Lerp(animator.GetLayerWeight(4), 1f, Time.deltaTime * 10f));
+        }
+
+
         if (playerInput.attack && !playerInput.aim && !isAttacking && target != null)
         {
             //Set bools
             isAttacking = true;
             movementController.CanDodge = false;
-
-            //Set animation layer weight and hipfire rig weight
-            manager.HipFireRig.weight = Mathf.Lerp(manager.HipFireRig.weight, 1f, Time.deltaTime * 10f);
-            animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 1f, Time.deltaTime * 10f));
 
             if (target.TryGetComponent(out EnemyAI enemy)) enemy.TakeDamage(manager.ShooterSettings.HipFireDamage);     
 
@@ -182,10 +186,10 @@ public class CombatShooterState : CombatBaseState
         animResetTimer += Time.deltaTime;
 
         //After 1 seconds, reset animation layer weight and hipfire rig weight if not attacking
-        if (animResetTimer >= 1f && !playerInput.aim)
+        if (animResetTimer >= 1f && !isAttacking)
         {
-            manager.HipFireRig.weight = Mathf.Lerp(manager.HipFireRig.weight, 0f, Time.deltaTime * 10f);
-            animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
+            manager.HipFireRig.weight = Mathf.Lerp(manager.HipFireRig.weight, 0f, Time.deltaTime * 20f);
+            animator.SetLayerWeight(4, Mathf.Lerp(animator.GetLayerWeight(4), 0f, Time.deltaTime * 20f));
 
             //Reset bool
             movementController.CanDodge = true;
