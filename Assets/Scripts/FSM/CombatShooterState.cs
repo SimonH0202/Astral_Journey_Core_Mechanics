@@ -168,8 +168,11 @@ public class CombatShooterState : CombatBaseState
         }
 
 
-        if (playerInput.attack && !playerInput.aim && !isAttacking && target != null)
+        if (playerInput.attack && !playerInput.aim && !isAttacking && target != null && manager.PlayerStatsSystem.Energy >= manager.ShooterSettings.HipFireEnergyDrain)
         {
+            //Drain Energy
+            manager.PlayerStatsSystem.TakeEnergy(manager.ShooterSettings.HipFireEnergyDrain);
+
             //Set bools
             isAttacking = true;
             movementController.CanDodge = false;

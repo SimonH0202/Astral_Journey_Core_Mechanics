@@ -183,10 +183,11 @@ public class MovementController : MonoBehaviour
 
     void HandleDodge()
     {
-        if (playerInput.dodge && !isJumping && !isDodging && !isMovementLocked && !isStrafing && canDodge)
+        if (playerInput.dodge && !isJumping && !isDodging && !isMovementLocked && !isStrafing && canDodge && playerStatsSystem.Energy >= 10)
         {
             isDodging = true;
             StartCoroutine(Dodge());
+            playerStatsSystem.TakeEnergy(10);
         }
     }
 
@@ -295,7 +296,7 @@ public class MovementController : MonoBehaviour
         DisableMovement();
 
         //Set invulnerability
-        playerStatsSystem.SetIsVunerable(false);
+        playerStatsSystem.IsVunerable = false;
 
         //Set dodge animation to true
         animator.SetBool(isDodgingHash, true);
@@ -320,7 +321,7 @@ public class MovementController : MonoBehaviour
         EnableMovement();
 
         //Set invulnerability to false
-        playerStatsSystem.SetIsVunerable(true);
+        playerStatsSystem.IsVunerable = true;
 
         //Reset input
         playerInput.dodge = false;

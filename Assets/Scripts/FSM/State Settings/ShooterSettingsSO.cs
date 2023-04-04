@@ -22,6 +22,7 @@ public class ShooterSettingsSO : ScriptableObject
     [Header("Hip Fire Settings")]
     [SerializeField] private float hipFireCooldown = 0.1f;
     [SerializeField] private float hipFireDamage = 2f;
+    [SerializeField] private float hipFireEnergyDrain = 5f;
 
     //Getters
     public GameObject ProjectilePrefab { get { return projectilePrefab; } }
@@ -33,4 +34,5 @@ public class ShooterSettingsSO : ScriptableObject
     public float ChargeUpTime { get { return chargeUpTime; } }
     public float HipFireCooldown { get { return hipFireCooldown; } }
     public float HipFireDamage { get { return hipFireDamage; } }
+    public float HipFireEnergyDrain { get { return hipFireEnergyDrain; } }
 }

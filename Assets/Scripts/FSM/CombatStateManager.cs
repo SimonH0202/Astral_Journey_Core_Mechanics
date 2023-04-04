@@ -13,6 +13,7 @@ public class CombatStateManager : MonoBehaviour
 
     //References
     PlayerInputs playerInput;
+    PlayerStatsSystem playerStatsSystem;
 
     [Header("Melee State")]
     [Space(10)]
@@ -47,6 +48,7 @@ public class CombatStateManager : MonoBehaviour
     {
         //Get references
         playerInput = GetComponent<PlayerInputs>();
+        playerStatsSystem = GetComponent<PlayerStatsSystem>();
 
         //Set initial state
         currentState = meleeState;
@@ -98,4 +100,5 @@ public class CombatStateManager : MonoBehaviour
     public CinemachineVirtualCamera AimVirtualCamera { get { return aimVirtualCamera; } }
     public float AimSenitivity { get { return aimSenitivity; } }
     public GameObject Crosshair { get { return crosshair; } }
+    public PlayerStatsSystem PlayerStatsSystem { get { return playerStatsSystem; } }
 }
