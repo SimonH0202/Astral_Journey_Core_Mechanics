@@ -43,9 +43,9 @@
                 },
                 {
                     "name": "Attack",
-                    "type": "PassThrough",
+                    "type": "Button",
                     "id": "b4d68410-f9ab-408f-861d-23d249bbb353",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -61,7 +61,7 @@
                 },
                 {
                     "name": "Dodge",
-                    "type": "PassThrough",
+                    "type": "Button",
                     "id": "f77fa25e-71a7-41ba-9118-ec8f9265c415",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -298,7 +298,7 @@
                 {
                     "name": "",
                     "id": "46a1d285-6509-4875-8ff5-2416c231a108",
-                    "path": "<Keyboard>/leftAlt",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",

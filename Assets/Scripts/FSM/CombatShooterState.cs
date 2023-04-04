@@ -174,7 +174,8 @@ public class CombatShooterState : CombatBaseState
             isAttacking = true;
             movementController.CanDodge = false;
 
-            if (target.TryGetComponent(out EnemyAI enemy)) enemy.TakeDamage(manager.ShooterSettings.HipFireDamage);     
+            //Damage target if it has an enemyAI component
+            if (target.TryGetComponent(out EnemyAI enemy)) enemy.TakeDamage(manager.ShooterSettings.HipFireDamage);    
 
             playerInput.attack = false;
 
@@ -198,6 +199,7 @@ public class CombatShooterState : CombatBaseState
 
     private Transform SetTarget(CombatStateManager manager)
     {
+        
         var forward = cameraTransform.forward;
         var right = cameraTransform.right;
 
@@ -234,6 +236,7 @@ public class CombatShooterState : CombatBaseState
 
         //Set animation layer weight
         animator.SetLayerWeight(3, 0f);
+        animator.SetLayerWeight(4, 0f);
 
         //Set weight of aim rig and hipfire rig to 0
         manager.AimRig.weight = 0;

@@ -37,7 +37,7 @@ public class CombatMeleeState : CombatBaseState
         animator = manager.GetComponent<Animator>();
         playerInput = manager.GetComponent<PlayerInputs>();
         damagePoint = manager.transform.Find("DamagePoint");
-        weaponPoint = manager.MeleeWeapon.transform.Find("WeaponPoint");
+        weaponPoint = manager.MeleeWeapon.transform.Find("PlayerWeaponPoint");
 
         //Activate weapon
         manager.MeleeWeapon.SetActive(true);
@@ -193,5 +193,8 @@ public class CombatMeleeState : CombatBaseState
         isAttacking = false;
         isJumpAttacking = false;
         damagedEnemies.Clear();
+
+        //Reset input
+        playerInput.attack = false;
     }
 }

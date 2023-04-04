@@ -7,7 +7,7 @@ public class LightEnemy : EnemyAI
    
     [SerializeField] private Transform[] chaseSpots;
 
-    [SerializeField] private float weaponLength = 2f;
+    [SerializeField] private float weaponLength = 1.4f;
 
     [SerializeField] private Transform weaponPoint;
 

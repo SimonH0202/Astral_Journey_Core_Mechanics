@@ -30,4 +30,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   multliplierThreshold1: 2
-  multliplierThreshold2: 2.5
+  multliplierThreshold2: 3.5

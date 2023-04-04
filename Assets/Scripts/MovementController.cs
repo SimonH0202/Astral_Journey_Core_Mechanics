@@ -321,6 +321,9 @@ public class MovementController : MonoBehaviour
 
         //Set invulnerability to false
         playerStatsSystem.SetIsVunerable(true);
+
+        //Reset input
+        playerInput.dodge = false;
     }
 
     //General Methods

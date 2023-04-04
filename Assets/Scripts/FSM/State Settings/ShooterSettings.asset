@@ -17,3 +17,8 @@ MonoBehaviour:
   projectileSpeed: 100
   shootingCooldown: 0.5
   maxDistanceShooter: 50
+  startDamage: 5
+  targetDamage: 50
+  chargeUpTime: 5
+  hipFireCooldown: 0.1
+  hipFireDamage: 5
