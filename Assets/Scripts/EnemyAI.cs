@@ -148,6 +148,8 @@ public class EnemyAI : MonoBehaviour
 
     void Die()
     {   
+        dead = true;
+
         //Remove enemy from list
         fellowAI.Remove(this);
 
@@ -161,7 +163,6 @@ public class EnemyAI : MonoBehaviour
         }
 
         //Disable enemy
-        dead = true;
         Destroy(GetComponent<Collider>());
 
         //Disable navmesh agent movement

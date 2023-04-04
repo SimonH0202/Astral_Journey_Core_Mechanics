@@ -39,6 +39,7 @@ public class CombatStateManager : MonoBehaviour
     //General Animation variables
     [SerializeField] private Transform armAimPoint;
     [SerializeField] private Rig aimRig;
+    [SerializeField] private Rig hipFireRig;
  
     
     // Start is called before the first frame update
@@ -93,6 +94,7 @@ public class CombatStateManager : MonoBehaviour
     public ShooterSettingsSO ShooterSettings { get { return shooterSettings; } }
     public Transform ArmAimPoint { get { return armAimPoint; } }
     public Rig AimRig { get { return aimRig; } }
+    public Rig HipFireRig { get { return hipFireRig; } }
     public CinemachineVirtualCamera AimVirtualCamera { get { return aimVirtualCamera; } }
     public float AimSenitivity { get { return aimSenitivity; } }
     public GameObject Crosshair { get { return crosshair; } }

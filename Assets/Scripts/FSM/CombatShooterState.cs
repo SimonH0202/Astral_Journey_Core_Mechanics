@@ -16,7 +16,8 @@ public class CombatShooterState : CombatBaseState
     GameObject projectile;
     bool isAttacking = false;
     float currentDamage;
-    float elapsedTime = 0.0f;
+    float elapsedTime = 0f;
+    float animResetTimer = 0f;
 
     //Animation hashes
     int isAimingHash;
@@ -45,11 +46,12 @@ public class CombatShooterState : CombatBaseState
     public override void UpdateState(CombatStateManager manager)
     {
         Aim(manager);
+        HipFire(manager);
     }
 
     private void Aim(CombatStateManager manager)
     {
-        if (playerInput.grenadeAim)
+        if (playerInput.aim)
         {
             movementController.RotateOnMove = false;
             movementController.IsStrafing = true;
@@ -99,7 +101,7 @@ public class CombatShooterState : CombatBaseState
             //Fire projectile
             Fire(manager, mouseWorldPosition);
         }   
-        if(!playerInput.grenadeAim)
+        if(!playerInput.aim)
         {
             //Reset, projectile, crosshair, camera, line renderer, elapsed time and current damage
 
@@ -120,7 +122,7 @@ public class CombatShooterState : CombatBaseState
 
     private void Fire(CombatStateManager manager, Vector3 mouseWorldPosition)
     {
-        if (playerInput.attack && playerInput.grenadeAim && !isAttacking)
+        if (playerInput.attack && playerInput.aim && !isAttacking)
         {   
             //Set attack bool
             isAttacking = true;
@@ -147,6 +149,69 @@ public class CombatShooterState : CombatBaseState
         } 
     }
 
+    private void HipFire(CombatStateManager manager)
+    {
+        //Set target
+        Transform target = SetTarget(manager);
+
+        //If target.postion is not manager.Armaimpoint.position, lerp to target
+        if (target != null && target.position != manager.ArmAimPoint.position)
+        {
+            manager.ArmAimPoint.position = Vector3.Lerp(manager.ArmAimPoint.position, target.position, Time.deltaTime * 10f);
+        }
+
+        if (playerInput.attack && !playerInput.aim && !isAttacking && target != null)
+        {
+            //Set bools
+            isAttacking = true;
+            movementController.CanDodge = false;
+
+            //Set animation layer weight and hipfire rig weight
+            manager.HipFireRig.weight = Mathf.Lerp(manager.HipFireRig.weight, 1f, Time.deltaTime * 10f);
+            animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 1f, Time.deltaTime * 10f));
+
+            if (target.TryGetComponent(out EnemyAI enemy)) enemy.TakeDamage(manager.ShooterSettings.HipFireDamage);     
+
+            playerInput.attack = false;
+
+            //Reset timer and attack bool after delay
+            animResetTimer = 0f;
+            manager.StartCoroutine(ShootDelay(manager.ShooterSettings.HipFireCooldown));
+        }
+
+        animResetTimer += Time.deltaTime;
+
+        //After 1 seconds, reset animation layer weight and hipfire rig weight if not attacking
+        if (animResetTimer >= 1f && !playerInput.aim)
+        {
+            manager.HipFireRig.weight = Mathf.Lerp(manager.HipFireRig.weight, 0f, Time.deltaTime * 10f);
+            animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * 10f));
+
+            //Reset bool
+            movementController.CanDodge = true;
+        }
+    }
+
+    private Transform SetTarget(CombatStateManager manager)
+    {
+        var forward = cameraTransform.forward;
+        var right = cameraTransform.right;
+
+        forward.y = 0f;
+        right.y = 0f;
+
+        forward.Normalize();
+        right.Normalize();
+
+        Vector3 inputDirection = forward + right;
+        inputDirection = inputDirection.normalized;
+
+        RaycastHit info;
+
+        if (Physics.SphereCast(manager.transform.position, 3f, inputDirection, out info, 15, manager.MeleeSettings.EnemyLayers)) return info.collider.transform;
+        else return null;
+    }
+
     private IEnumerator ShootDelay(float delay = 0.5f) 
     {
         yield return new WaitForSeconds(delay);
@@ -166,8 +231,9 @@ public class CombatShooterState : CombatBaseState
         //Set animation layer weight
         animator.SetLayerWeight(3, 0f);
 
-        //Set weight of aim rig
+        //Set weight of aim rig and hipfire rig to 0
         manager.AimRig.weight = 0;
+        manager.HipFireRig.weight = 0;
     }
 }
 

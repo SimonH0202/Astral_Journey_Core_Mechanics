@@ -51,6 +51,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Aim",
+                    "type": "PassThrough",
+                    "id": "41111c6a-9e16-4014-ba03-a4ac16d4325b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Dodge",
                     "type": "PassThrough",
                     "id": "f77fa25e-71a7-41ba-9118-ec8f9265c415",
@@ -82,15 +91,6 @@
                     "type": "Button",
                     "id": "301968da-781f-4ca1-b300-4d4a7a0b5d46",
                     "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "GrenadeAim",
-                    "type": "PassThrough",
-                    "id": "41111c6a-9e16-4014-ba03-a4ac16d4325b",
-                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -319,28 +319,6 @@
                 },
                 {
                     "name": "",
-                    "id": "c48ee566-61a1-4b85-8866-ac6b1b6f7f58",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "GrenadeAim",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c5dbb839-faf0-49ec-a407-b6bb95cee146",
-                    "path": "<Gamepad>/leftTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "GrenadeAim",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "44de9572-db79-4c81-96cb-ce1abc462406",
                     "path": "<Keyboard>/g",
                     "interactions": "",
@@ -402,6 +380,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "ShooterState",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c48ee566-61a1-4b85-8866-ac6b1b6f7f58",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c5dbb839-faf0-49ec-a407-b6bb95cee146",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Aim",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

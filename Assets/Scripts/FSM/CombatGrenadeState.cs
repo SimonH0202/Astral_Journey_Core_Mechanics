@@ -40,7 +40,7 @@ public class CombatGrenadeState : CombatBaseState
 
     private void Aim(CombatStateManager manager)
     {
-        if (playerInput.grenadeAim)
+        if (playerInput.aim)
         {
             //Set up line renderer
             lineRenderer.enabled = true;
@@ -77,7 +77,7 @@ public class CombatGrenadeState : CombatBaseState
             Fire(manager);
        
         }   
-        if(!playerInput.grenadeAim)
+        if(!playerInput.aim)
         {
             //Reset movement, grenade, camera and line renderer
             movementController.RotateOnMove = true;
@@ -95,7 +95,7 @@ public class CombatGrenadeState : CombatBaseState
 
     private void Fire(CombatStateManager manager)
     {
-        if (playerInput.attack && playerInput.grenadeAim && !isAttacking && !maxDistanceReached)
+        if (playerInput.attack && playerInput.aim && !isAttacking && !maxDistanceReached)
         {   
             //Set attack bool
             isAttacking = true;

@@ -32,6 +32,7 @@ public class MovementController : MonoBehaviour
 
     //Private Dodge variables
     bool isDodging = false;
+    bool canDodge = true;
 
     //Private Cinemachine variables
     private float cinemachineTargetYaw;
@@ -182,7 +183,7 @@ public class MovementController : MonoBehaviour
 
     void HandleDodge()
     {
-        if (playerInput.dodge && !isJumping && !isDodging && !isMovementLocked && !isStrafing)
+        if (playerInput.dodge && !isJumping && !isDodging && !isMovementLocked && !isStrafing && canDodge)
         {
             isDodging = true;
             StartCoroutine(Dodge());
@@ -378,6 +379,7 @@ public class MovementController : MonoBehaviour
     public float Sensitivity { set => sensitivity = value; }
     public bool IsStrafing { set => isStrafing = value; }
     public float StrafeSpeed { set => strafeSpeed = value; }
+    public bool CanDodge { set => canDodge = value; }
 
     //Getter
     public bool IsJumping { get => isJumping; }

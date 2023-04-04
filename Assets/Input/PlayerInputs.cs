@@ -10,8 +10,8 @@ public class PlayerInputs : MonoBehaviour
 	public bool sprint;
 	public bool dodge;
 
-	[Header("Grenade State Values")]
-	public bool grenadeAim;
+	[Header("Grenade/Shooter State Values")]
+	public bool aim;
 
 	[Header("Character State Values")]
 	public bool grenadeState;
@@ -51,9 +51,9 @@ public class PlayerInputs : MonoBehaviour
 	{
 		DodgeInput(value.isPressed);
 	}
-	public void OnGrenadeAim(InputValue value)
+	public void OnAim(InputValue value)
 	{
-		GrenadeAimInput(value.isPressed);
+		AimInput(value.isPressed);
 	}
 	public void OnGrenadeState(InputValue value)
 	{
@@ -93,9 +93,9 @@ public class PlayerInputs : MonoBehaviour
 	{
 		dodge = newDodgeState;
 	}
-	public void GrenadeAimInput(bool newGrenadeAimState)
+	public void AimInput(bool newAimState)
 	{
-		grenadeAim = newGrenadeAimState;
+		aim = newAimState;
 	}
 	public void GrenadeStateInput(bool newGrenadeState)
 	{
