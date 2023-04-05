@@ -6,21 +6,24 @@ using UnityEngine.AI;
 public abstract class EnemyAI : MonoBehaviour
 { 
     //Editor Enemy Settings
-    [SerializeField] protected Transform[] patrolPoints;
+    [Header("Enemy Settings")]
+    [Space(10)]
     [SerializeField] protected List<EnemyAI> fellowAI;
-  
     //Enemy stats
     [SerializeField] protected float health = 100f;
-
     [SerializeField] protected StatsBar healthBar;
-
 
     //Enemy attack settings
     [SerializeField] protected float attackDamage = 10f;
+    [SerializeField] protected float attackRange = 2f;
+
+    //Enemy patrol settings
+    [SerializeField] protected float patrolRange = 10f;
 
 
     //Private patrolling variables
-    protected int currentPoint;
+    protected Vector3 startPoint;
+    protected Vector3 nextPoint;
     protected bool patrolling;
     protected bool attacking;
     protected bool hit;
@@ -47,17 +50,15 @@ public abstract class EnemyAI : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         playerController = player.GetComponent<MovementController>();
         animator = GetComponent<Animator>();
+        startPoint = transform.position;
+        nextPoint = RandomPoint();
 
         //Set up patrolling variables
         patrolling = true;
         attacking = false;
-        currentPoint = 0;
 
         //Set up health bar
         healthBar.SetMaxStat(health);
-
-        //Set up start destination
-        agent.destination = patrolPoints[currentPoint].position;
 
         isWalkingHash = Animator.StringToHash("isWalking");
         isAttackingHash = Animator.StringToHash("isAttacking");
@@ -113,18 +114,19 @@ public abstract class EnemyAI : MonoBehaviour
         return false;
     }
 
-    protected void Iterate()
+    protected Vector3 RandomPoint()
     {
-        //Iterate to next waypoint
-        if(currentPoint < patrolPoints.Length-1)
+        //Get random point in circle
+        Vector3 randomPoint = startPoint + Random.insideUnitSphere * patrolRange;
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas))
         {
-            currentPoint++;
+            Debug.DrawRay(hit.position, Vector3.up, Color.red, 1f);
+            //Set destination to random point
+            if (Vector3.Distance(hit.position, transform.position) > 1f) return hit.position;
+            else RandomPoint();
         }
-        else
-        {
-            currentPoint = 0;
-        }
-        agent.destination = patrolPoints[currentPoint].transform.position;
+        return startPoint;
     }
     
     public bool Patrolling { get; set; }

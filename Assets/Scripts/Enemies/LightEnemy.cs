@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class LightEnemy : EnemyAI
 {
-   
+    [Space(10)]
+    [Header("Light Enemy Settings")]
+    [Space(10)]
     [SerializeField] private Transform[] chaseSpots;
-
     [SerializeField] private float weaponLength = 1.4f;
-
     [SerializeField] private Transform weaponPoint;
-
     [SerializeField] private LayerMask playerLayers;
 
+    //Private variables
     private List<GameObject> damagedPlayers = new List<GameObject>();
 
   
@@ -38,13 +38,14 @@ public class LightEnemy : EnemyAI
             //Player is out of sight
             if(Vector3.Distance(this.transform.position, player.transform.position) > 10f)
             {   
-                agent.speed = 5f;
-                agent.destination = patrolPoints[currentPoint].position;
+                agent.speed = 2.5f;
+                agent.destination = nextPoint;          
             }
             //Go to next waypoint
-            if(Vector3.Distance(this.transform.position, patrolPoints[currentPoint].position) <= 5f)
+            if(Vector3.Distance(this.transform.position, nextPoint) <= 5f)
             {
-                Iterate(); 
+                nextPoint = RandomPoint();
+                agent.destination = nextPoint; 
             }    
         }
         //Check if player is still in reach
@@ -54,7 +55,7 @@ public class LightEnemy : EnemyAI
             else patrolling = true;
 
             //Player is in attack range
-            if(Vector3.Distance(this.transform.position, player.transform.position) <= 2f)
+            if(Vector3.Distance(this.transform.position, player.transform.position) <= attackRange)
             {
                 if (!attacking)
                 {
