@@ -86,6 +86,7 @@ public abstract class EnemyAI : MonoBehaviour
             health -= damage;
             healthBar.SetStat(health);
             hit = true;
+            if (health <= 0) Die();
     }
 
     public abstract void Die();

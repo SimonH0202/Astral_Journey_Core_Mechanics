@@ -18,7 +18,6 @@ public class LightEnemy : EnemyAI
   
     private void Update()
     {
-        if (health <= 0) Die();
         if (!dead)
         {
             PatrolAndAttack();

@@ -183,8 +183,15 @@ public class MovementController : MonoBehaviour
 
     void HandleDodge()
     {
-        if (playerInput.dodge && !isJumping && !isDodging && !isMovementLocked && !isStrafing && canDodge && playerStatsSystem.Energy >= 10)
+        if (playerInput.dodge && !isJumping && !isDodging && !isMovementLocked && !isStrafing && canDodge)
         {
+            //If not sufficient energy, return
+            if (playerStatsSystem.Energy < 10)
+            {
+                playerInput.dodge = false;
+                return;
+            }
+
             isDodging = true;
             StartCoroutine(Dodge());
             playerStatsSystem.TakeEnergy(10);

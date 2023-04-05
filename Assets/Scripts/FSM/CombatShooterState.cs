@@ -168,8 +168,15 @@ public class CombatShooterState : CombatBaseState
         }
 
 
-        if (playerInput.attack && !playerInput.aim && !isAttacking && target != null && manager.PlayerStatsSystem.Energy >= manager.ShooterSettings.HipFireEnergyDrain)
+        if (playerInput.attack && !playerInput.aim && !isAttacking && target != null)
         {
+            //If not sufficient energy, return
+            if (manager.PlayerStatsSystem.Energy < manager.ShooterSettings.HipFireEnergyDrain)
+            {
+                playerInput.attack = false;
+                return;
+            }
+
             //Drain Energy
             manager.PlayerStatsSystem.TakeEnergy(manager.ShooterSettings.HipFireEnergyDrain);
 
