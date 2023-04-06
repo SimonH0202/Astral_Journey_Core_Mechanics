@@ -119,8 +119,11 @@ public abstract class EnemyAI : MonoBehaviour
     {
         if (hit && patrolling)
         {
-            //Follow player if hit
-            FollowPlayer();
+            for(int i = 0; i < fellowAI.Count; i++)
+            {  
+                EnemyAI EnemyAI = fellowAI[i] as EnemyAI;
+                EnemyAI.FollowPlayer();
+            }
 
             //Start timer to stop following
             StartCoroutine(StopFollowing());
