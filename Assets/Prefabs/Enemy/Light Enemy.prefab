@@ -2770,19 +2770,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6026305851100d489599594f3aedef1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
   fellowAI: []
   health: 100
   healthBar: {fileID: 2436988673354436365}
   attackDamage: 10
-  chaseSpots: []
-  weaponLength: 1.4
-  weaponPoint: {fileID: 5639311296420514690}
+  patrolRange: 10
   playerLayers:
     serializedVersion: 2
     m_Bits: 128
+  chaseSpots: []
+  weaponPoint: {fileID: 5639311296420514690}
+  weaponLength: 1.4
+  attackRange: 2
 --- !u!1 &4911957605787571603
 GameObject:
   m_ObjectHideFlags: 0

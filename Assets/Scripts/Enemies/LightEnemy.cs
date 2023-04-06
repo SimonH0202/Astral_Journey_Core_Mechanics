@@ -8,51 +8,28 @@ public class LightEnemy : EnemyAI
     [Header("Light Enemy Settings")]
     [Space(10)]
     [SerializeField] private Transform[] chaseSpots;
-    [SerializeField] private float weaponLength = 1.4f;
     [SerializeField] private Transform weaponPoint;
-    [SerializeField] private LayerMask playerLayers;
+    [SerializeField] private float weaponLength = 1.4f;
+    [SerializeField] private float attackRange = 2f;
 
-    //Private variables
     private List<GameObject> damagedPlayers = new List<GameObject>();
 
-  
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
         if (!dead)
         {
-            PatrolAndAttack();
             HandleWalkAnimation();
             AttackIfHit();
         }
     }
-
+    
     public override void PatrolAndAttack()
     {
-        if(patrolling){
-            //Player is in sight
-             if(Vector3.Distance(this.transform.position, player.transform.position) <= 10f)
-            {
-                FollowPlayer();
-            }
-            //Player is out of sight
-            if(Vector3.Distance(this.transform.position, player.transform.position) > 10f)
-            {   
-                agent.speed = 2.5f;
-                agent.destination = nextPoint;          
-            }
-            //Go to next waypoint
-            if(Vector3.Distance(this.transform.position, nextPoint) <= 5f)
-            {
-                nextPoint = RandomPoint();
-                agent.destination = nextPoint; 
-            }    
-        }
+        base.PatrolAndAttack();
         //Check if player is still in reach
         if(!patrolling)
         {
-            if(CheckDistance()) FollowPlayer();
-            else patrolling = true;
-
             //Player is in attack range
             if(Vector3.Distance(this.transform.position, player.transform.position) <= attackRange)
             {
@@ -64,33 +41,12 @@ public class LightEnemy : EnemyAI
                 }
                 HandleDamageRaycast();
             }
-        } 
+        }
     }
 
     public override void Die()
     {
-        //Remove enemy from list
-        fellowAI.Remove(this);
-
-        for(int i = 0; i < fellowAI.Count; i++)
-        {
-            LightEnemy lightEnemy = fellowAI[i] as LightEnemy;
-            //Set all fellow AI to follow player on death
-            lightEnemy.FollowPlayer();
-
-            //Remove this enemy from fellow AI list
-            lightEnemy.fellowAI.Remove(this);
-        }
-
-        //Disable enemy
-        dead = true;
-        Destroy(GetComponent<Collider>());
-
-        //Disable navmesh agent movement
-        agent.SetDestination(transform.position);
-
-        //Disable health bar
-        healthBar.gameObject.SetActive(false);
+        base.Die();
 
         //Set dead animation
         animator.SetBool(isDeadHash, true);
@@ -118,6 +74,20 @@ public class LightEnemy : EnemyAI
         damagedPlayers.Clear();
     }
 
+    public override void FollowPlayer()
+    {
+        base.FollowPlayer();
+        int k = 0;
+        agent.speed = 7.5f;
+        agent.destination = chaseSpots[k].position;
+        k++;
+        // out of bounds error handling, spare enemys share first spot
+        if(k >= chaseSpots.Length)
+        {
+            k = 0;
+        }    
+    }
+
     void HandleWalkAnimation()
     {
         //Handle walk animation and rotation
@@ -132,24 +102,6 @@ public class LightEnemy : EnemyAI
             animator.SetBool(isWalkingHash, false);
             if (!patrolling) transform.LookAt(new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z));
         }       
-    }
-
-    public override void FollowPlayer()
-    {
-        int k = 0;
-        for(int i = 0; i < fellowAI.Count; i++)
-        {
-            LightEnemy lightEnemy = fellowAI[i] as LightEnemy;
-            lightEnemy.patrolling = false;
-            lightEnemy.agent.speed = 7.5f;
-            lightEnemy.agent.destination = chaseSpots[k].position;
-            k++;
-            // out of bounds error handling, spare enemys share first spot
-            if(k >= chaseSpots.Length)
-            {
-                k = 0;
-            }
-        }
     }
 
     void HandleDamageRaycast()

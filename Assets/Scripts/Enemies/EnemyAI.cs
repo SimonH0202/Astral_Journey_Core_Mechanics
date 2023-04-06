@@ -9,17 +9,16 @@ public abstract class EnemyAI : MonoBehaviour
     [Header("Enemy Settings")]
     [Space(10)]
     [SerializeField] protected List<EnemyAI> fellowAI;
+  
     //Enemy stats
     [SerializeField] protected float health = 100f;
     [SerializeField] protected StatsBar healthBar;
 
     //Enemy attack settings
     [SerializeField] protected float attackDamage = 10f;
-    [SerializeField] protected float attackRange = 2f;
 
     //Enemy patrol settings
     [SerializeField] protected float patrolRange = 10f;
-
 
     //Private patrolling variables
     protected Vector3 startPoint;
@@ -42,6 +41,7 @@ public abstract class EnemyAI : MonoBehaviour
     protected int isAttackingHash;
     protected int isDeadHash;
 
+    [SerializeField] protected LayerMask playerLayers;
 
     protected void Start()
     {
@@ -50,25 +50,71 @@ public abstract class EnemyAI : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         playerController = player.GetComponent<MovementController>();
         animator = GetComponent<Animator>();
-        startPoint = transform.position;
-        nextPoint = RandomPoint();
 
         //Set up patrolling variables
         patrolling = true;
         attacking = false;
+        startPoint = transform.position;
+        nextPoint = RandomPoint();
 
         //Set up health bar
-        healthBar.SetMaxStat(health);
+        if (healthBar != null) healthBar.SetMaxStat(health);
+
+        //Set up start destination
+        agent.destination = nextPoint;
 
         isWalkingHash = Animator.StringToHash("isWalking");
         isAttackingHash = Animator.StringToHash("isAttacking");
         isDeadHash = Animator.StringToHash("isDead");
 
     }
-      
 
-    public abstract void PatrolAndAttack();
-    
+    protected virtual void Update()
+    {
+        if (!dead)
+        {
+            PatrolAndAttack();
+        }
+    }
+
+    public virtual void PatrolAndAttack()
+    {
+        if(patrolling){
+            //Player is in sight
+             if(Vector3.Distance(this.transform.position, player.transform.position) <= 10f)
+            {
+                FollowPlayer();
+            }
+            //Player is out of sight
+            if(Vector3.Distance(this.transform.position, player.transform.position) > 10f)
+            {   
+                agent.speed = 2.5f;
+                agent.destination = nextPoint;
+            }
+            //Go to next waypoint
+            if(Vector3.Distance(this.transform.position, nextPoint) <= 5f)
+            {
+                nextPoint = RandomPoint();
+                agent.destination = nextPoint;
+            }    
+        }
+        //Check if player is still in reach
+        if(!patrolling)
+        {
+            if(CheckDistance()) FollowPlayer();
+            else patrolling = true;
+        }
+    }
+
+    public virtual void FollowPlayer()
+    {
+        for(int i = 0; i < fellowAI.Count; i++)
+        {  
+            EnemyAI EnemyAI = fellowAI[i] as EnemyAI;
+            EnemyAI.patrolling = false;
+        }
+    }
+
     public void AttackIfHit()
     {
         if (hit && patrolling)
@@ -84,12 +130,36 @@ public abstract class EnemyAI : MonoBehaviour
     public void TakeDamage(float damage)
     {
             health -= damage;
-            healthBar.SetStat(health);
+            if (healthBar != null) healthBar.SetStat(health);
             hit = true;
             if (health <= 0) Die();
     }
 
-    public abstract void Die();
+    public virtual void Die()
+    {
+        //Remove enemy from list
+        fellowAI.Remove(this);
+
+        for(int i = 0; i < fellowAI.Count; i++)
+        {
+            EnemyAI EnemyAI = fellowAI[i] as EnemyAI;
+            //Set all fellow AI to follow player on death
+            EnemyAI.FollowPlayer();
+
+            //Remove this enemy from fellow AI list
+            EnemyAI.fellowAI.Remove(this);
+        }
+
+        //Disable enemy
+        dead = true;
+        Destroy(GetComponent<Collider>());
+
+        //Disable navmesh agent movement
+        agent.SetDestination(transform.position);
+
+        //Disable health bar
+        if (healthBar != null) healthBar.gameObject.SetActive(false);
+    }
 
     //Stop following coroutine
     IEnumerator StopFollowing()
@@ -98,10 +168,7 @@ public abstract class EnemyAI : MonoBehaviour
         hit = false;
         patrolling = true;
     }
-
-
-    public abstract void FollowPlayer();
-   
+  
 
     public bool CheckDistance(){
         //Check if player is in reach of one of the enemys

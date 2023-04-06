@@ -18,8 +18,8 @@ public class PlayerStatsSystem : MonoBehaviour
     //Private variables
     private bool isVunerable;
     private float timer;
-    public float health;
-    public float energy;
+    private float health;
+    private float energy;
 
     // Start is called before the first frame update
     void Start()
