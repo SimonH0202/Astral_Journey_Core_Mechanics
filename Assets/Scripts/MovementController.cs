@@ -320,15 +320,15 @@ public class MovementController : MonoBehaviour
             characterController.Move(dodgeDirection * dodgeDistance * Time.deltaTime);
             timer += Time.deltaTime;
 
+            //After 0.05 seconds, set vulnerable
+            if (timer > 0.05f) playerStatsSystem.IsVunerable = true;
+
             yield return null;
         }
         //Set dodge animation to false and enable movement
         animator.SetBool(isDodgingHash, false);
         isDodging = false;
         EnableMovement();
-
-        //Set invulnerability to false
-        playerStatsSystem.IsVunerable = true;
 
         //Reset input
         playerInput.dodge = false;

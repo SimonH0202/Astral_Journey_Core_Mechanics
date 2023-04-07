@@ -108,7 +108,7 @@ public class CombatMeleeState : CombatBaseState
                 if (!damagedEnemies.Contains(enemy.gameObject) && !movementController.IsJumping)
                 {
                     damagedEnemies.Add(enemy.gameObject);
-                    enemy.GetComponent<EnemyAI>().TakeDamage(manager.MeleeSettings.AttacksList[attackIndex].damage);
+                    enemy.GetComponent<BasicEnemy>().TakeDamage(manager.MeleeSettings.AttacksList[attackIndex].damage);
                     attackIndex++;
                     if (attackIndex >= manager.MeleeSettings.AttacksList.Count) attackIndex = 0;
                 }
@@ -130,7 +130,7 @@ public class CombatMeleeState : CombatBaseState
                 {
                     //Damage enemy
                     damagedEnemies.Add(hit.transform.gameObject);
-                    hit.transform.GetComponent<EnemyAI>().TakeDamage(manager.MeleeSettings.AttacksList[attackIndex].damage);
+                    hit.transform.GetComponent<BasicEnemy>().TakeDamage(manager.MeleeSettings.AttacksList[attackIndex].damage);
                     //Increment attack index
                     attackIndex++;
                     if (attackIndex >= manager.MeleeSettings.AttacksList.Count) attackIndex = 0;
@@ -151,7 +151,7 @@ public class CombatMeleeState : CombatBaseState
                 {
                     //Damage enemy
                     damagedEnemies.Add(enemy.gameObject);
-                    enemy.GetComponent<EnemyAI>().TakeDamage(manager.MeleeSettings.JumpAttacksList[jumpAttackIndex].damage * jumpAttackDamageMultiplier);
+                    enemy.GetComponent<BasicEnemy>().TakeDamage(manager.MeleeSettings.JumpAttacksList[jumpAttackIndex].damage * jumpAttackDamageMultiplier);
                     //Reset damage multiplier
                     jumpAttackDamageMultiplier = 1f;
                     //Increment jump attack index

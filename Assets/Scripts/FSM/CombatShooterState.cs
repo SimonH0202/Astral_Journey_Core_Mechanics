@@ -185,7 +185,7 @@ public class CombatShooterState : CombatBaseState
             movementController.CanDodge = false;
 
             //Damage target if it has an enemyAI component
-            if (target.TryGetComponent(out EnemyAI enemy)) enemy.TakeDamage(manager.ShooterSettings.HipFireDamage);    
+            if (target.TryGetComponent(out BasicEnemy enemy)) enemy.TakeDamage(manager.ShooterSettings.HipFireDamage);    
 
             playerInput.attack = false;
 

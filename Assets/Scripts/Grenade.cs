@@ -40,7 +40,7 @@ public class Grenade : MonoBehaviour
             if (!damagedEnemies.Contains(h.gameObject) && hasExploded)
             {
                 //Damage enemy
-                if (h.TryGetComponent(out EnemyAI enemy))
+                if (h.TryGetComponent(out BasicEnemy enemy))
                 {
                     damagedEnemies.Add(h.gameObject);
                     enemy.TakeDamage(grenadeDmg);

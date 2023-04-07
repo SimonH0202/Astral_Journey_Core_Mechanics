@@ -42,6 +42,7 @@ public class CombatGrenadeState : CombatBaseState
     {
         if (playerInput.aim)
         {
+
             //Set up line renderer
             lineRenderer.enabled = true;
             movementController.RotateOnMove = false;
@@ -79,6 +80,9 @@ public class CombatGrenadeState : CombatBaseState
         }   
         if(!playerInput.aim)
         {
+            //Reset player input
+            playerInput.attack = false;
+
             //Reset movement, grenade, camera and line renderer
             movementController.RotateOnMove = true;
             movementController.IsStrafing = false;

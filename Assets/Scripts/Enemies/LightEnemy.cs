@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LightEnemy : EnemyAI
+public class LightEnemy : BasicEnemy
 {
     [Space(10)]
     [Header("Light Enemy Settings")]
@@ -21,6 +21,7 @@ public class LightEnemy : EnemyAI
         {
             HandleWalkAnimation();
             AttackIfHit();
+            HandleDamageRaycast();
         }
     }
     
@@ -37,9 +38,8 @@ public class LightEnemy : EnemyAI
                 {
                     attacking = true;
                     agent.isStopped = true;
-                    StartCoroutine(Attack());
-                }
-                HandleDamageRaycast();
+                    StartCoroutine(AttackCorountine());
+                }    
             }
         }
     }
@@ -58,7 +58,7 @@ public class LightEnemy : EnemyAI
     }
 
       //Attack coroutine
-    IEnumerator Attack()
+    IEnumerator AttackCorountine()
     {
         //Play attack animation
         animator.SetBool(isAttackingHash, true);

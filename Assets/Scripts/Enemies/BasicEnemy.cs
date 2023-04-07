@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public abstract class EnemyAI : MonoBehaviour
+public abstract class BasicEnemy : MonoBehaviour
 { 
     //Editor Enemy Settings
     [Header("Enemy Settings")]
     [Space(10)]
-    [SerializeField] protected List<EnemyAI> fellowAI;
+    [SerializeField] protected List<BasicEnemy> fellowAI;
   
     //Enemy stats
-    [SerializeField] protected float health = 100f;
     [SerializeField] protected StatsBar healthBar;
+    [SerializeField] protected float health = 100f;
+
 
     //Enemy attack settings
     [SerializeField] protected float attackDamage = 10f;
@@ -40,10 +41,11 @@ public abstract class EnemyAI : MonoBehaviour
     protected int isWalkingHash;
     protected int isAttackingHash;
     protected int isDeadHash;
+    protected int attackAnimSpeedHash; 
 
     [SerializeField] protected LayerMask playerLayers;
 
-    protected void Start()
+    protected virtual void Start()
     {
         //Get References
         agent = GetComponent<NavMeshAgent>();
@@ -81,12 +83,12 @@ public abstract class EnemyAI : MonoBehaviour
     {
         if(patrolling){
             //Player is in sight
-             if(Vector3.Distance(this.transform.position, player.transform.position) <= 10f)
+             if(Vector3.Distance(this.transform.position, player.transform.position) <= patrolRange)
             {
                 FollowPlayer();
             }
             //Player is out of sight
-            if(Vector3.Distance(this.transform.position, player.transform.position) > 10f)
+            if(Vector3.Distance(this.transform.position, player.transform.position) > patrolRange)
             {   
                 agent.speed = 2.5f;
                 agent.destination = nextPoint;
@@ -110,8 +112,16 @@ public abstract class EnemyAI : MonoBehaviour
     {
         for(int i = 0; i < fellowAI.Count; i++)
         {  
-            EnemyAI EnemyAI = fellowAI[i] as EnemyAI;
-            EnemyAI.patrolling = false;
+            if (fellowAI[i] is AdvancedEnemy)
+            {
+                AdvancedEnemy advancedEnemy = fellowAI[i] as AdvancedEnemy;
+                advancedEnemy.patrolling = false;
+            }
+            else if (fellowAI[i] is BasicEnemy)
+            {
+                BasicEnemy enemyAI = fellowAI[i] as BasicEnemy;
+                enemyAI.patrolling = false;
+            }
         }
     }
 
@@ -121,8 +131,16 @@ public abstract class EnemyAI : MonoBehaviour
         {
             for(int i = 0; i < fellowAI.Count; i++)
             {  
-                EnemyAI EnemyAI = fellowAI[i] as EnemyAI;
-                EnemyAI.FollowPlayer();
+                if (fellowAI[i] is AdvancedEnemy)
+                {
+                    AdvancedEnemy advancedEnemy = fellowAI[i] as AdvancedEnemy;
+                    advancedEnemy.FollowPlayer();
+                }
+                else if (fellowAI[i] is BasicEnemy)
+                {
+                    BasicEnemy basicEnemy = fellowAI[i] as BasicEnemy;
+                    basicEnemy.FollowPlayer();
+                }
             }
 
             //Start timer to stop following
@@ -145,12 +163,12 @@ public abstract class EnemyAI : MonoBehaviour
 
         for(int i = 0; i < fellowAI.Count; i++)
         {
-            EnemyAI EnemyAI = fellowAI[i] as EnemyAI;
+            BasicEnemy basicEnemy = fellowAI[i] as BasicEnemy;
             //Set all fellow AI to follow player on death
-            EnemyAI.FollowPlayer();
+            basicEnemy.FollowPlayer();
 
             //Remove this enemy from fellow AI list
-            EnemyAI.fellowAI.Remove(this);
+            basicEnemy.fellowAI.Remove(this);
         }
 
         //Disable enemy
@@ -171,15 +189,33 @@ public abstract class EnemyAI : MonoBehaviour
         hit = false;
         patrolling = true;
     }
-  
 
-    public bool CheckDistance(){
+    public bool CheckDistance()
+    {
+        //Check if there are any enemies in the scene
+        if (fellowAI == null || fellowAI.Count == 0)
+        {
+            return false;
+        }
+
         //Check if player is in reach of one of the enemys
         for(int i = 0; i < fellowAI.Count; i++)
         {
-            if(Vector3.Distance(fellowAI[i].transform.position, player.transform.position) <= 10f)
+            if (fellowAI[i] is AdvancedEnemy)
             {
-                return true;
+                AdvancedEnemy advancedEnemy = fellowAI[i] as AdvancedEnemy;
+                if(Vector3.Distance(advancedEnemy.transform.position, player.transform.position) <= 10f)
+                {
+                    return true;
+                }
+            }
+            else if (fellowAI[i] is BasicEnemy)
+            {
+                BasicEnemy basicEnemy = fellowAI[i] as BasicEnemy;
+                if(Vector3.Distance(basicEnemy.transform.position, player.transform.position) <= 10f)
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -199,7 +235,22 @@ public abstract class EnemyAI : MonoBehaviour
         }
         return startPoint;
     }
-    
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public override bool Equals(object other)
+    {
+        return base.Equals(other);
+    }
+
+    public override string ToString()
+    {
+        return base.ToString();
+    }
+
     public bool Patrolling { get; set; }
 
   

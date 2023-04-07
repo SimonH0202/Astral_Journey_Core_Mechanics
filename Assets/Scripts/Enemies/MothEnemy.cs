@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MothEnemy : EnemyAI
+public class MothEnemy : BasicEnemy
 {
     public override void Die()
     {

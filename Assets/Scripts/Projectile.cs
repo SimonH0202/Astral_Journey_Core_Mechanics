@@ -32,12 +32,12 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if(other.GetComponent<EnemyAI>() != null)
+        if(other.GetComponent<BasicEnemy>() != null)
         {
             Destroy(gameObject);
-            other.GetComponent<EnemyAI>().TakeDamage(damage);
+            other.GetComponent<BasicEnemy>().TakeDamage(damage);
         }
-        else if(other.GetComponent<EnemyAI>() == null)
+        else if(other.GetComponent<BasicEnemy>() == null)
         {
             Destroy(gameObject);
         }
